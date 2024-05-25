@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "todo-list"
+version = "0.1.0"
+description = ""
+authors = ["Vitaliy Ukiru <33477790+vitaliy-ukiru@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.111.0"
+uvicorn = "^0.29.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
