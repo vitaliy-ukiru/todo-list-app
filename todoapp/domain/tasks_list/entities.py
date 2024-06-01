@@ -1,0 +1,16 @@
+from typing import Annotated
+
+from pydantic import Field
+
+from todoapp.domain.common.entities import BaseEntity
+from todoapp.domain.task.entities import TaskItem
+from todoapp.domain.tasks_list.value_objects import ListId
+from todoapp.domain.user.entitites import User
+
+
+class TasksListInfo(BaseEntity[ListId]):
+    name: Annotated[str, Field(min_length=3, max_length=500)]
+
+class TasksList(TasksListInfo):
+    user: User
+    tasks: list[TaskItem]
