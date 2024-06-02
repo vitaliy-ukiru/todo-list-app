@@ -30,5 +30,9 @@ class TaskRepo(Protocol):
         raise NotImplementedError
 
     @abstractmethod
+    async def get_total_count(self, filters: FindTasksFilters) -> int:
+        raise NotImplementedError
+
+    @abstractmethod
     async def find_tasks(self, filters: FindTasksFilters, pagination: Pagination) -> list[Task]:
         raise NotImplementedError
