@@ -7,8 +7,8 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 
-from todoapp.common.settings import config as cfg
-from todoapp.infra.db.connect import to_dsn
+from todoapp.common.settings import DatabaseConfig
+from todoapp.infra.db.main import config_to_url
 from todoapp.infra.db.models import Base
 
 # this is the Alembic Config object, which provides
@@ -27,7 +27,7 @@ target_metadata = Base.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
-dsn = to_dsn(cfg.db)
+dsn = config_to_url(DatabaseConfig())
 
 config.set_main_option(
     'sqlalchemy.url',
