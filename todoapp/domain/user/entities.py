@@ -7,6 +7,7 @@ from pydantic import EmailStr, SecretStr, Field
 from uuid6 import uuid7
 
 from todoapp.domain.common.entities import BaseEntity
+from todoapp.domain.common.value_objects import DateTimeNull
 
 UserId = NewType("UserId", UUID)
 
@@ -24,6 +25,11 @@ class PasswordHasher(Protocol):
 class User(BaseEntity[UserId]):
     email: EmailStr
     password: Annotated[SecretStr, Field(exclude=True)]
+    deleted_at: DateTimeNull = None
+
+    @property
+    def is_deleted(self) -> bool:
+        return self.deleted_at is not None
 
     @classmethod
     def create(

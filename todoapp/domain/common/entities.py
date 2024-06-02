@@ -12,9 +12,4 @@ IdT = TypeVar('IdT', bound=UUID)
 class BaseEntity(BaseModel, Generic[IdT]):
     id: IdT
     created_at: datetime
-    deleted_at: DateTimeNull = None
-
-    @property
-    def is_deleted(self) -> bool:
-        return self.deleted_at is not None
 
