@@ -12,7 +12,7 @@ from todoapp.domain.task.entities import Task, TaskId
 class FindTasksFilters(BaseModel):
     name: str | None = None
     desc: str | None = None
-    completed: bool | Empty.UNSET
+    completed: bool | Empty = Empty.UNSET
     list_id: UUID | None | Empty = Empty.UNSET
 
 
