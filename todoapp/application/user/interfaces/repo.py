@@ -1,7 +1,7 @@
 import abc
 from typing import Protocol
 
-from todoapp.domain.user.entitites import User, UserId
+from todoapp.domain.user.entities import User, UserId
 
 
 class UserRepo(Protocol):
