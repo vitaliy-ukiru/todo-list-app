@@ -1,4 +1,4 @@
-from .repo import UserRepo
+from .repository import UserRepo
 
 __all__ = (
     UserRepo,

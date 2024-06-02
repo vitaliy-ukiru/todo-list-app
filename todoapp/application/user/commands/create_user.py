@@ -5,7 +5,7 @@ from didiator import Mediator
 
 from todoapp.application.common.command import Command, CommandHandler
 from todoapp.application.common.interfaces.uow import UnitOfWork
-from todoapp.application.user.interfaces.repo import UserRepo
+from todoapp.application.user.interfaces import UserRepo
 from todoapp.domain.user.entities import PasswordHasher, User
 
 
