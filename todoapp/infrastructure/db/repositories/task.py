@@ -2,7 +2,6 @@ from typing import NoReturn, Iterable
 
 from sqlalchemy import select, Select
 from sqlalchemy.exc import DBAPIError, IntegrityError
-from sqlalchemy.orm import Query
 from sqlalchemy.sql.functions import count
 
 from todoapp.application.common.exceptions import RepoError
@@ -56,12 +55,8 @@ class TaskRepoImpl(SQLAlchemyRepo, TaskRepo):
         else:
             query = query.order_by(Task.id.desc())
 
-        query = self._apply_filter(query, filters)
-
-        if pagination.offset is not None:
-            query = query.offset(pagination.offset)
-        if pagination.limit is not None:
-            query = query.limit(pagination.limit)
+        query = self._apply_filters(query, filters)
+        query = self.apply_pagination(query, pagination)
 
         result: Iterable[Task] = await self._session.scalars(query)
         tasks = [convert_model_to_entity(task) for task in result]
@@ -70,8 +65,7 @@ class TaskRepoImpl(SQLAlchemyRepo, TaskRepo):
     @exception_mapper
     async def get_total_count(self, filters: FindTasksFilters) -> int:
         query = select(count(Task.id))
-        query = self._apply_filter(query, filters)
-
+        query = self._apply_filters(query, filters)
         tasks_count: int = await self._session.scalar(query)
         return tasks_count
 
@@ -84,7 +78,7 @@ class TaskRepoImpl(SQLAlchemyRepo, TaskRepo):
                 raise RepoError from err
 
     @staticmethod
-    def _apply_filter(query: Select, filters: FindTasksFilters) -> Query:
+    def _apply_filters(query: Select, filters: FindTasksFilters) -> Select:
         if filters.name:
             query = query.where(Task.name.icontains(filters.name))
 

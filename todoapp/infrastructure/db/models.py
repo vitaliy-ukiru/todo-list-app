@@ -22,7 +22,7 @@ class Base(DeclarativeBase):
     pass
 
 
-class BaseModel(Base):
+class EntityBaseModel(Base):
     __abstract__ = True
 
     id: Mapped[UUID] = mapped_column(
@@ -32,7 +32,7 @@ class BaseModel(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
 
-class User(BaseModel):
+class User(EntityBaseModel):
     __tablename__ = "users"
 
     email: Mapped[str] = mapped_column(unique=True, index=True)
@@ -40,14 +40,14 @@ class User(BaseModel):
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
-class TaskList(BaseModel):
+class TaskList(EntityBaseModel):
     __tablename__ = "task_lists"
     name: Mapped[str] = mapped_column()
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
-class Task(BaseModel):
+class Task(EntityBaseModel):
     __tablename__ = "tasks"
 
     name: Mapped[str] = mapped_column()

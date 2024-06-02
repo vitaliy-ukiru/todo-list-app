@@ -13,6 +13,8 @@ from didiator.utils.di_builder import DiBuilderImpl
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
 from todoapp.application.common.interfaces.uow import UnitOfWork
+from todoapp.application.task.interfaces.repository import TaskRepo
+from todoapp.application.task_list.interfaces import TaskListRepo
 from todoapp.application.user.interfaces import UserRepo
 from todoapp.common.settings import (
     Config,
@@ -25,14 +27,12 @@ from todoapp.infrastructure.db.main import (
     build_sa_session_factory
 )
 from todoapp.infrastructure.db.repositories import (
-    UserRepoImpl,
+    UserRepoImpl, TaskRepoImpl, TaskListRepoImpl
 )
 from todoapp.infrastructure.db.uow import SQLAlchemyUoW
 from todoapp.infrastructure.mediator import get_mediator
 from todoapp.infrastructure.passhash.bcrypt import BcryptPasswordHasher
 from .constants import DiScope
-from ..db.repositories.task import TaskRepoImpl
-from ...application.task.interfaces.repository import TaskRepo
 
 
 def build_di_builder(config: Config) -> DiBuilder:
@@ -52,11 +52,17 @@ def _init_di_builder() -> DiBuilder:
 
 def _setup_di_builder(di: DiBuilder) -> None:
     di.bind(bind_by_type(Dependent(lambda *args: di, scope=DiScope.APP), DiBuilder))
+    di.bind(
+        bind_by_type(
+            Dependent(BcryptPasswordHasher, scope=DiScope.APP),
+            PasswordHasher,
+            covariant=True,
+        )
+    )
 
     _setup_mediator_factory(di, get_mediator, DiScope.REQUEST)
     _setup_db_factories(di)
-    _setup_user_factories(di)
-    _setup_task_factories(di)
+    _setup_repositories(di)
 
 
 def setup_di_builder_config(di_builder: DiBuilder, config: Config) -> None:
@@ -86,7 +92,7 @@ def _setup_db_factories(di: DiBuilder) -> None:
     di.bind(bind_by_type(Dependent(SQLAlchemyUoW, scope=DiScope.REQUEST), UnitOfWork))
 
 
-def _setup_user_factories(di: DiBuilder):
+def _setup_repositories(di: DiBuilder):
     di.bind(
         bind_by_type(
             Dependent(UserRepoImpl, scope=DiScope.REQUEST),
@@ -97,18 +103,16 @@ def _setup_user_factories(di: DiBuilder):
 
     di.bind(
         bind_by_type(
-            Dependent(BcryptPasswordHasher, scope=DiScope.APP),
-            PasswordHasher,
+            Dependent(TaskRepoImpl, scope=DiScope.REQUEST),
+            TaskRepo,
             covariant=True,
         )
     )
 
-
-def _setup_task_factories(di: DiBuilder):
     di.bind(
         bind_by_type(
-            Dependent(TaskRepoImpl, scope=DiScope.REQUEST),
-            TaskRepo,
+            Dependent(TaskListRepoImpl, scope=DiScope.REQUEST),
+            TaskListRepo,
             covariant=True,
         )
     )
