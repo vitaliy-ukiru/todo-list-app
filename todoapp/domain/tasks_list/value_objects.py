@@ -1,5 +1,4 @@
 from typing import NewType
+from uuid import UUID
 
-from pydantic import UUID4
-
-ListId = NewType("ListId", UUID4)
+ListId = NewType("ListId", UUID)

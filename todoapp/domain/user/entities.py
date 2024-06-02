@@ -1,10 +1,11 @@
 from typing import NewType, Annotated
+from uuid import UUID
 
-from pydantic import UUID4, EmailStr, SecretStr, Field
+from pydantic import EmailStr, SecretStr, Field
 
 from todoapp.domain.common.entities import BaseEntity
 
-UserId = NewType("UserId", UUID4)
+UserId = NewType("UserId", UUID)
 
 
 class User(BaseEntity[UserId]):

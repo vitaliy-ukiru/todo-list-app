@@ -5,7 +5,7 @@ from pydantic import Field
 from todoapp.domain.common.entities import BaseEntity
 from todoapp.domain.task.entities import TaskItem
 from todoapp.domain.tasks_list.value_objects import ListId
-from todoapp.domain.user.entitites import User
+from todoapp.domain.user.entities import User
 
 
 class TasksListInfo(BaseEntity[ListId]):

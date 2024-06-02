@@ -1,13 +1,14 @@
 from typing import NewType, Annotated
+from uuid import UUID
 
-from pydantic import UUID4, Field
+from pydantic import Field
 
 from todoapp.domain.common.entities import BaseEntity
 from todoapp.domain.common.value_objects import DateTimeNull
 from todoapp.domain.tasks_list.value_objects import ListId
-from todoapp.domain.user.entitites import User
+from todoapp.domain.user.entities import User
 
-TaskId = NewType("TaskId", UUID4)
+TaskId = NewType("TaskId", UUID)
 
 
 class TaskItem(BaseEntity[TaskId]):
@@ -19,3 +20,4 @@ class TaskItem(BaseEntity[TaskId]):
 class Task(TaskItem):
     user: User
     list_id: ListId | None = None
+
