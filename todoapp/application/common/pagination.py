@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, Self
 
 from todoapp.application.common.dto import DTO
 
@@ -24,10 +24,13 @@ class PaginationResult(DTO):
     order: SortOrder
 
     @classmethod
-    def from_pagination(cls, pagination: Pagination, total: int) -> "PaginationResult":
-        offset = pagination.offset
-        limit = pagination.limit
-        return cls(offset=offset, limit=limit, order=pagination.order, total=total)
+    def from_pagination(cls, pagination: Pagination, total: int) -> Self:
+        return cls(
+            offset=pagination.offset,
+            limit=pagination.limit,
+            order=pagination.order,
+            total=total,
+        )
 
 
 class PaginatedItemsDTO(DTO, Generic[Item]):

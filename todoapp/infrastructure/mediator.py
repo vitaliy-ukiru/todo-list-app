@@ -11,6 +11,20 @@ from didiator.interface.utils.di_builder import DiBuilder
 from didiator.middlewares.di import DiMiddleware, DiScopes
 from didiator.middlewares.logging import LoggingMiddleware
 
+from todoapp.application.task.commands import (
+    CompleteTask, CompleteTaskHandler,
+    CreateTask, CreateTaskHandler,
+    UpdateTask, UpdateTaskHandler,
+    PutTaskInList, PutTaskInListHandler,
+)
+from todoapp.application.task.queries import (
+    FindTasks, FindTasksHandler,
+    GetTaskById, GetTaskByIdHandler,
+)
+from todoapp.application.task_list.queries import (
+    GetListById,
+    GetListByIdHandler,
+)
 from todoapp.application.user.commands import (
     CreateUser,
     CreateUserHandler,
@@ -33,6 +47,16 @@ def init_mediator(di_builder: DiBuilder) -> Mediator:
 
 def setup_mediator(mediator: Mediator) -> None:
     mediator.register_command_handler(CreateUser, CreateUserHandler)
+
+    mediator.register_command_handler(CompleteTask, CompleteTaskHandler)
+    mediator.register_command_handler(CreateTask, CreateTaskHandler)
+    mediator.register_command_handler(UpdateTask, UpdateTaskHandler)
+    mediator.register_command_handler(PutTaskInList, PutTaskInListHandler)
+
+    mediator.register_query_handler(FindTasks, FindTasksHandler)
+    mediator.register_query_handler(GetTaskById, GetTaskByIdHandler)
+
+    mediator.register_query_handler(GetListById, GetListByIdHandler)
 
 
 def get_mediator() -> Mediator:

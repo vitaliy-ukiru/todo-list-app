@@ -16,3 +16,6 @@ class TaskList(BaseEntity[ListId]):
     @property
     def is_deleted(self) -> bool:
         return self.deleted_at is not None
+
+    def is_have_access(self, user_id: UserId) -> bool:
+        return self.user_id == user_id
