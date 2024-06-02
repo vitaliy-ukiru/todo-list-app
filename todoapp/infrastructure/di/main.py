@@ -31,6 +31,8 @@ from todoapp.infrastructure.db.uow import SQLAlchemyUoW
 from todoapp.infrastructure.mediator import get_mediator
 from todoapp.infrastructure.passhash.bcrypt import BcryptPasswordHasher
 from .constants import DiScope
+from ..db.repositories.task import TaskRepoImpl
+from ...application.task.interfaces.repository import TaskRepo
 
 
 def build_di_builder(config: Config) -> DiBuilder:
@@ -54,6 +56,7 @@ def _setup_di_builder(di: DiBuilder) -> None:
     _setup_mediator_factory(di, get_mediator, DiScope.REQUEST)
     _setup_db_factories(di)
     _setup_user_factories(di)
+    _setup_task_factories(di)
 
 
 def setup_di_builder_config(di_builder: DiBuilder, config: Config) -> None:
@@ -96,6 +99,16 @@ def _setup_user_factories(di: DiBuilder):
         bind_by_type(
             Dependent(BcryptPasswordHasher, scope=DiScope.APP),
             PasswordHasher,
+            covariant=True,
+        )
+    )
+
+
+def _setup_task_factories(di: DiBuilder):
+    di.bind(
+        bind_by_type(
+            Dependent(TaskRepoImpl, scope=DiScope.REQUEST),
+            TaskRepo,
             covariant=True,
         )
     )
