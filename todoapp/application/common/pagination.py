@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from enum import Enum
 from typing import Generic, TypeVar
 
@@ -12,14 +11,12 @@ class SortOrder(Enum):
     DESC = "DESC"
 
 
-@dataclass(frozen=True)
-class Pagination:
+class Pagination(DTO):
     offset: int | None = None
     limit: int | None = None
     order: SortOrder = SortOrder.ASC
 
 
-@dataclass(frozen=True)
 class PaginationResult(DTO):
     offset: int | None
     limit: int | None
@@ -33,7 +30,6 @@ class PaginationResult(DTO):
         return cls(offset=offset, limit=limit, order=pagination.order, total=total)
 
 
-@dataclass(frozen=True)
 class PaginatedItemsDTO(DTO, Generic[Item]):
     data: list[Item]
     pagination: PaginationResult
