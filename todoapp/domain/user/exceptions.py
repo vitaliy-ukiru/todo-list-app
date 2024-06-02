@@ -5,7 +5,7 @@ from todoapp.domain.user.entities import UserId
 
 
 @dataclass(eq=False)
-class UserIsDeletedError(RuntimeError, DomainError):
+class UserIsDeletedError(DomainError):
     user_id: UserId
 
     @property
