@@ -44,9 +44,5 @@ class User(BaseEntity[UserId]):
     def verify_password(self, hasher: PasswordHasher, password: str) -> bool:
         return hasher.verify(self.password.get_secret_value(), password)
 
-    @property
-    def is_deleted(self) -> bool:
-        return self.deleted_at is not None
-
     def delete(self):
         self.deleted_at = datetime.utcnow()
