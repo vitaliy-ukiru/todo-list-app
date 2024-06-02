@@ -1,7 +1,6 @@
 __all__ = (
-    "Settings",
-    "DatabaseSettings",
-    "config"
+    "Config",
+    "DatabaseConfig",
 )
 from typing import Annotated
 
@@ -22,7 +21,7 @@ def _model_config(prefix: str = "") -> SettingsConfigDict:
         case_sensitive=False,
     )
 
-class DatabaseSettings(BaseSettings):
+class DatabaseConfig(BaseSettings):
     password: SecretStr | None = None
     username: str
     database: str
@@ -32,12 +31,9 @@ class DatabaseSettings(BaseSettings):
     model_config = _model_config("db_")
 
 
-class Settings(BaseSettings):
-    db: Annotated[DatabaseSettings, Field(default_factory=DatabaseSettings)]
+class Config(BaseSettings):
+    db: Annotated[DatabaseConfig, Field(default_factory=DatabaseConfig)]
     host: str = "localhost"
     port: int = 8000
 
     model_config = _model_config()
-
-
-config = Settings()
