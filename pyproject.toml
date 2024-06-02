@@ -13,6 +13,8 @@ sqlalchemy = {extras = ["asyncio"], version = "^2.0.30"}
 alembic = "^1.13.1"
 pydantic-settings = "^2.2.1"
 asyncpg = "^0.29.0"
+didiator = {extras = ["di"], version = "^0.3.1"}
+uuid6 = "^2024.1.12"
 
 
 [build-system]
