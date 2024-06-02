@@ -4,12 +4,12 @@ from sqlalchemy.exc import DBAPIError, IntegrityError
 
 from todoapp.application.common.exceptions import RepoError
 from todoapp.application.user.exceptions import UserIdAlreadyExistsError, UserIdNotExistError
-from todoapp.application.user.interfaces.repo import UserRepo
+from todoapp.application.user.interfaces import UserRepo
 from todoapp.domain.user import entities
 from todoapp.domain.user.exceptions import EmailAlreadyExistsError
-from todoapp.infra.db.repo.exception_mapper import exception_mapper
-from todoapp.infra.db.models import User
-from todoapp.infra.db.repo.base import SQLAlchemyRepo
+from todoapp.infrastructure.db.models import User
+from .base import SQLAlchemyRepo
+from .exception_mapper import exception_mapper
 
 
 class UserRepoImpl(SQLAlchemyRepo, UserRepo):
@@ -51,6 +51,7 @@ class UserRepoImpl(SQLAlchemyRepo, UserRepo):
                 raise EmailAlreadyExistsError(str(user.email)) from err
             case _:
                 raise RepoError from err
+
 
 def convert_model_to_entity(user: User) -> entities.User:
     return entities.User(

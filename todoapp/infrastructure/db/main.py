@@ -1,8 +1,13 @@
 from collections.abc import AsyncGenerator
 
 from sqlalchemy import URL, select
-from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine, \
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
     AsyncConnection
+)
 
 from todoapp.common.settings import DatabaseConfig
 
@@ -16,6 +21,7 @@ def config_to_url(cfg: DatabaseConfig) -> URL:
         host=cfg.host,
         port=cfg.port,
     )
+
 
 async def build_sa_engine(db_config: DatabaseConfig) -> AsyncGenerator[AsyncEngine, None]:
     engine = create_async_engine(
@@ -41,5 +47,3 @@ async def build_sa_session(
 ) -> AsyncGenerator[AsyncSession, None]:
     async with session_factory() as session:
         yield session
-
-

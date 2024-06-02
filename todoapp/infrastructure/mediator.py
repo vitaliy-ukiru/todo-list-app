@@ -1,7 +1,12 @@
 import logging
 
-from didiator import CommandDispatcherImpl, EventObserverImpl, Mediator, MediatorImpl, \
+from didiator import (
+    CommandDispatcherImpl,
+    EventObserverImpl,
+    Mediator,
+    MediatorImpl,
     QueryDispatcherImpl
+)
 from didiator.interface.utils.di_builder import DiBuilder
 from didiator.middlewares.di import DiMiddleware, DiScopes
 from didiator.middlewares.logging import LoggingMiddleware
@@ -10,7 +15,7 @@ from todoapp.application.user.commands import (
     CreateUser,
     CreateUserHandler,
 )
-from todoapp.infra.di import DiScope
+from todoapp.infrastructure.di import DiScope
 
 
 def init_mediator(di_builder: DiBuilder) -> Mediator:

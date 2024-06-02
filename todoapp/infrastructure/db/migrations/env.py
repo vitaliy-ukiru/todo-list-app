@@ -8,8 +8,8 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 
 from todoapp.common.settings import DatabaseConfig
-from todoapp.infra.db.main import config_to_url
-from todoapp.infra.db.models import Base
+from todoapp.infrastructure.db.main import config_to_url
+from todoapp.infrastructure.db.models import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
