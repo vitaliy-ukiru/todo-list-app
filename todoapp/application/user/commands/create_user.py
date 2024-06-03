@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from uuid import UUID
 
-from didiator import Mediator
+from pydantic import UUID4, BaseModel, EmailStr
 
 from todoapp.application.common.command import Command, CommandHandler
 from todoapp.application.common.interfaces.uow import UnitOfWork
@@ -15,22 +15,15 @@ class CreateUser(Command[UUID]):
     password: str
 
 
+@dataclass
 class CreateUserHandler(CommandHandler[CreateUser, UUID]):
-    def __init__(
-        self,
-        user_repo: UserRepo,
-        uow: UnitOfWork,
-        mediator: Mediator,
-        hasher: PasswordHasher,
-    ) -> None:
-        self._hasher = hasher
-        self._user_repo = user_repo
-        self._uow = uow
-        self._mediator = mediator
+    user_repo: UserRepo
+    uow: UnitOfWork
+    hasher: PasswordHasher
 
     async def __call__(self, command: CreateUser) -> UUID:
-        user = User.create(command.email, command.password, self._hasher)
-        await self._user_repo.save_user(user)
-        await self._uow.commit()
+        user = User.create(command.email, command.password, self.hasher)
+        await self.user_repo.save_user(user)
+        await self.uow.commit()
 
         return user.id
