@@ -1,7 +1,8 @@
 from .constants import DiScope
-from .main import build_di_builder
+from .main import init_di_builder, setup_di_builder
 
 __all__ = (
     "DiScope",
-    "build_di_builder"
+    "init_di_builder",
+    'setup_di_builder',
 )

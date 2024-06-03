@@ -1,5 +1,6 @@
 __all__ = (
-    'build_di_builder',
+    'init_di_builder',
+    'setup_di_builder',
 )
 
 from di import Container, bind_by_type
@@ -15,6 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 from todoapp.application.common.interfaces.uow import UnitOfWork
 from todoapp.application.task.interfaces.repository import TaskRepo
 from todoapp.application.task_list.interfaces import TaskListRepo
+from todoapp.application.task_list.interfaces.task_mover import TaskMover
 from todoapp.application.user.interfaces import UserRepo
 from todoapp.common.settings import (
     Config,
@@ -29,22 +31,14 @@ from todoapp.infrastructure.db.main import (
 from todoapp.infrastructure.db.repositories import (
     UserRepoImpl, TaskRepoImpl, TaskListRepoImpl, TaskMoverImpl
 )
+from todoapp.infrastructure.db.repositories.task_list import TaskInListFinder
 from todoapp.infrastructure.db.uow import SQLAlchemyUoW
 from todoapp.infrastructure.mediator import get_mediator
 from todoapp.infrastructure.passhash.bcrypt import BcryptPasswordHasher
 from .constants import DiScope
-from ..db.repositories.task_list import TaskInListFinder
-from ...application.task_list.interfaces.task_mover import TaskMover
 
 
-def build_di_builder(config: Config) -> DiBuilder:
-    di = _init_di_builder()
-    _setup_di_builder(di)
-    setup_di_builder_config(di, config)
-    return di
-
-
-def _init_di_builder() -> DiBuilder:
+def init_di_builder() -> DiBuilder:
     di_container = Container()
     di_executor = AsyncExecutor()
     di_scopes = [DiScope.APP, DiScope.REQUEST]
@@ -52,7 +46,7 @@ def _init_di_builder() -> DiBuilder:
     return di_builder
 
 
-def _setup_di_builder(di: DiBuilder) -> None:
+def setup_di_builder(di: DiBuilder, config: Config, mediator: Mediator) -> None:
     di.bind(bind_by_type(Dependent(lambda *args: di, scope=DiScope.APP), DiBuilder))
     di.bind(
         bind_by_type(
@@ -65,9 +59,10 @@ def _setup_di_builder(di: DiBuilder) -> None:
     _setup_mediator_factory(di, get_mediator, DiScope.REQUEST)
     _setup_db_factories(di)
     _setup_repositories(di)
+    _setup_di_builder_config(di, config)
 
 
-def setup_di_builder_config(di_builder: DiBuilder, config: Config) -> None:
+def _setup_di_builder_config(di_builder: DiBuilder, config: Config) -> None:
     di_builder.bind(bind_by_type(Dependent(lambda *args: config, scope=DiScope.APP), Config))
     di_builder.bind(bind_by_type(Dependent(lambda *args: config.db, scope=DiScope.APP), DatabaseConfig))
 
