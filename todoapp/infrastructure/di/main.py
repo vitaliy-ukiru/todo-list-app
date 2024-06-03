@@ -27,12 +27,13 @@ from todoapp.infrastructure.db.main import (
     build_sa_session_factory
 )
 from todoapp.infrastructure.db.repositories import (
-    UserRepoImpl, TaskRepoImpl, TaskListRepoImpl
+    UserRepoImpl, TaskRepoImpl, TaskListRepoImpl, TaskMoverImpl
 )
 from todoapp.infrastructure.db.uow import SQLAlchemyUoW
 from todoapp.infrastructure.mediator import get_mediator
 from todoapp.infrastructure.passhash.bcrypt import BcryptPasswordHasher
 from .constants import DiScope
+from ...application.task_list.interfaces.task_mover import TaskMover
 
 
 def build_di_builder(config: Config) -> DiBuilder:
@@ -114,5 +115,13 @@ def _setup_repositories(di: DiBuilder):
             Dependent(TaskListRepoImpl, scope=DiScope.REQUEST),
             TaskListRepo,
             covariant=True,
+        )
+    )
+
+    di.bind(
+        bind_by_type(
+            Dependent(TaskMoverImpl, scope=DiScope.REQUEST),
+            TaskMover,
+            covariant=True
         )
     )
