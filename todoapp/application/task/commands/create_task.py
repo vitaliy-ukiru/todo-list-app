@@ -7,7 +7,7 @@ from todoapp.application.common.command import Command, CommandHandler
 from todoapp.application.common.interfaces.uow import UnitOfWork
 from todoapp.application.task.interfaces.repository import TaskRepo
 from todoapp.application.task_list.exceptions import TaskListAccessError
-from todoapp.application.task_list.queries import GetListById
+from todoapp.application.task_list.queries import GetListDetailsById
 from todoapp.domain.task.entities import Task
 from todoapp.domain.tasks_list.value_objects import ListId
 from todoapp.domain.user.entities import UserId
@@ -28,10 +28,10 @@ class CreateTaskHandler(CommandHandler[CreateTask, UUID]):
     mediator: Mediator
 
     async def _check_list_owner(self, list_id: UUID, user_id: UserId):
-        task_list = await self.mediator.query(GetListById(
+        task_list = await self.mediator.query(GetListDetailsById(
             list_id=list_id
         ))
-        if task_list.user_id != user_id:
+        if task_list.is_have_access(user_id):
             raise TaskListAccessError(list_id)
 
     async def __call__(self, command: CreateTask) -> UUID:

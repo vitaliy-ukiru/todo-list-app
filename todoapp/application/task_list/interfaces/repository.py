@@ -17,15 +17,15 @@ class FindTaskListsFilters(BaseModel):
 
 class TaskListRepo(Protocol):
     @abstractmethod
-    async def add_task_list(self, task: entities.TaskList):
+    async def add_task_list(self, task: entities.TaskListDetails):
         raise NotImplementedError
 
     @abstractmethod
-    async def acquire_task_list_by_id(self, list_id: vo.ListId) -> entities.TaskList:
+    async def acquire_task_list_by_id(self, list_id: vo.ListId) -> entities.TaskListDetails:
         raise NotImplementedError
 
     @abstractmethod
-    async def update_task_list(self, task: entities.TaskList):
+    async def update_task_list(self, task: entities.TaskListDetails):
         raise NotImplementedError
 
     @abstractmethod
@@ -33,9 +33,17 @@ class TaskListRepo(Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    async def find_task_lists(
+    async def find_task_lists_details(
         self,
         filters: FindTaskListsFilters,
         pagination: Pagination
-    ) -> list[entities.TaskList]:
+    ) -> list[entities.TaskListDetails]:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def get_task_list_by_id(self, list_id: vo.ListId) -> entities.TaskList:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def delete_task_list(self, list_id: vo.ListId) -> None:
         raise NotImplementedError

@@ -29,4 +29,5 @@ class DeleteTaskHandler(CommandHandler[DeleteTask, None]):
             raise TaskAccessError(command.task_id)
 
         await self.task_repo.delete_task(task_id)
+        await self.uow.commit()
 

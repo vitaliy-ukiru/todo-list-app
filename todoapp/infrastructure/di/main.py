@@ -33,6 +33,7 @@ from todoapp.infrastructure.db.uow import SQLAlchemyUoW
 from todoapp.infrastructure.mediator import get_mediator
 from todoapp.infrastructure.passhash.bcrypt import BcryptPasswordHasher
 from .constants import DiScope
+from ..db.repositories.task_list import TaskInListFinder
 from ...application.task_list.interfaces.task_mover import TaskMover
 
 
@@ -122,6 +123,14 @@ def _setup_repositories(di: DiBuilder):
         bind_by_type(
             Dependent(TaskMoverImpl, scope=DiScope.REQUEST),
             TaskMover,
+            covariant=True
+        )
+    )
+
+    di.bind(
+        bind_by_type(
+            Dependent(TaskInListFinder, scope=DiScope.REQUEST),
+            TaskInListFinder,
             covariant=True
         )
     )

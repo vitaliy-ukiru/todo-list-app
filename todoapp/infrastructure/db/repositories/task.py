@@ -1,6 +1,6 @@
 from typing import NoReturn, Iterable
 
-from sqlalchemy import select, Select
+from sqlalchemy import select, Select, delete
 from sqlalchemy.exc import DBAPIError, IntegrityError
 from sqlalchemy.sql.functions import count
 

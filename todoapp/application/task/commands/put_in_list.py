@@ -8,7 +8,7 @@ from todoapp.application.common.interfaces.uow import UnitOfWork
 from todoapp.application.task.exceptions import TaskAccessError
 from todoapp.application.task.interfaces.repository import TaskRepo
 from todoapp.application.task_list.exceptions import TaskListAccessError
-from todoapp.application.task_list.queries import GetListById
+from todoapp.application.task_list.queries import GetListDetailsById
 from todoapp.domain.task.entities import Task, TaskId
 from todoapp.domain.user.entities import UserId
 
@@ -33,7 +33,7 @@ class PutTaskInListHandler(CommandHandler[PutTaskInList, Task]):
         if not task.is_have_access(user_id):
             raise TaskAccessError(command.task_id)
 
-        task_list = await self.mediator.query(GetListById(list_id=command.list_id))
+        task_list = await self.mediator.query(GetListDetailsById(list_id=command.list_id))
         if not task_list.is_have_access(user_id):
             raise TaskListAccessError(command.list_id)
 
