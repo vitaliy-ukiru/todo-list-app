@@ -30,6 +30,10 @@ class TaskRepo(Protocol):
         raise NotImplementedError
 
     @abstractmethod
+    async def delete_task(self, task_id: TaskId) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
     async def get_total_count(self, filters: FindTasksFilters) -> int:
         raise NotImplementedError
 

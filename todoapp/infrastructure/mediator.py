@@ -16,6 +16,7 @@ from todoapp.application.task.commands import (
     CreateTask, CreateTaskHandler,
     UpdateTask, UpdateTaskHandler,
     PutTaskInList, PutTaskInListHandler,
+    DeleteTask, DeleteTaskHandler,
 )
 from todoapp.application.task.queries import (
     FindTasks, FindTasksHandler,
@@ -52,6 +53,7 @@ def setup_mediator(mediator: Mediator) -> None:
     mediator.register_command_handler(CreateTask, CreateTaskHandler)
     mediator.register_command_handler(UpdateTask, UpdateTaskHandler)
     mediator.register_command_handler(PutTaskInList, PutTaskInListHandler)
+    mediator.register_command_handler(DeleteTask, DeleteTaskHandler)
 
     mediator.register_query_handler(FindTasks, FindTasksHandler)
     mediator.register_query_handler(GetTaskById, GetTaskByIdHandler)

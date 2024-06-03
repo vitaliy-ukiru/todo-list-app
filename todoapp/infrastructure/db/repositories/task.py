@@ -10,6 +10,7 @@ from todoapp.application.task.exceptions import TaskAlreadyExistsError, TaskNotE
 from todoapp.application.task.interfaces.repository import TaskRepo, FindTasksFilters
 from todoapp.domain.common.constants import Empty
 from todoapp.domain.task import entities
+from todoapp.domain.task.entities import TaskId
 from todoapp.domain.tasks_list.value_objects import ListId
 from todoapp.domain.user.entities import UserId
 from todoapp.infrastructure.db.models import Task
@@ -46,6 +47,17 @@ class TaskRepoImpl(SQLAlchemyRepo, TaskRepo):
             await self._session.merge(model)
         except IntegrityError as err:
             self._parse_error(err, task)
+
+    @exception_mapper
+    async def delete_task(self, task_id: TaskId) -> None:
+        task: Task | None = await self._session.get(
+            Task, task_id,
+        )
+        if task is None:
+            raise TaskNotExistsError(task_id)
+
+        await self._session.delete(task)
+        await self._session.flush((task,))
 
     @exception_mapper
     async def find_tasks(self, filters: FindTasksFilters, pagination: Pagination) -> list[entities.Task]:
