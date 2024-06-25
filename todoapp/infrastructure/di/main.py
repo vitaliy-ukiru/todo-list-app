@@ -11,8 +11,10 @@ from di.executors import AsyncExecutor
 from didiator import CommandMediator, Mediator, QueryMediator
 from didiator.interface.utils.di_builder import DiBuilder
 from didiator.utils.di_builder import DiBuilderImpl
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
+from todoapp.application.auth.jwt import JWTAuthenticator
 from todoapp.application.common.interfaces.uow import UnitOfWork
 from todoapp.application.task.interfaces.repository import TaskRepo
 from todoapp.application.task_list.interfaces import TaskListRepo
@@ -20,22 +22,25 @@ from todoapp.application.task_list.interfaces.task_mover import TaskMover
 from todoapp.application.user.interfaces import UserRepo
 from todoapp.common.settings import (
     Config,
-    DatabaseConfig
+    DatabaseConfig, AuthConfig
 )
 from todoapp.domain.user.entities import PasswordHasher
+from todoapp.infrastructure.auth.di import get_jwt_authenticator
 from todoapp.infrastructure.db.main import (
     build_sa_engine,
     build_sa_session,
     build_sa_session_factory
 )
 from todoapp.infrastructure.db.repositories import (
-    UserRepoImpl, TaskRepoImpl, TaskListRepoImpl, TaskMoverImpl
+    UserRepoImpl, TaskRepoImpl, TaskListRepoImpl, TaskMoverImpl, TaskInListFinderImpl
 )
 from todoapp.infrastructure.db.repositories.task_list import TaskInListFinder
 from todoapp.infrastructure.db.uow import SQLAlchemyUoW
 from todoapp.infrastructure.mediator import get_mediator
 from todoapp.infrastructure.passhash.bcrypt import BcryptPasswordHasher
+from todoapp.infrastructure.redis.main import build_redis_client
 from .constants import DiScope
+from ..auth.repository import TokensRepoImpl
 
 
 def init_di_builder() -> DiBuilder:
@@ -46,12 +51,19 @@ def init_di_builder() -> DiBuilder:
     return di_builder
 
 
-def setup_di_builder(di: DiBuilder, config: Config, mediator: Mediator) -> None:
+def setup_di_builder(di: DiBuilder, config: Config) -> None:
     di.bind(bind_by_type(Dependent(lambda *args: di, scope=DiScope.APP), DiBuilder))
     di.bind(
         bind_by_type(
             Dependent(BcryptPasswordHasher, scope=DiScope.APP),
             PasswordHasher,
+            covariant=True,
+        )
+    )
+    di.bind(
+        bind_by_type(
+            Dependent(get_jwt_authenticator, scope=DiScope.APP),
+            JWTAuthenticator,
             covariant=True,
         )
     )
@@ -65,6 +77,7 @@ def setup_di_builder(di: DiBuilder, config: Config, mediator: Mediator) -> None:
 def _setup_di_builder_config(di_builder: DiBuilder, config: Config) -> None:
     di_builder.bind(bind_by_type(Dependent(lambda *args: config, scope=DiScope.APP), Config))
     di_builder.bind(bind_by_type(Dependent(lambda *args: config.db, scope=DiScope.APP), DatabaseConfig))
+    di_builder.bind(bind_by_type(Dependent(lambda *args: config.auth, scope=DiScope.APP), AuthConfig))
 
 
 def _setup_mediator_factory(
@@ -87,6 +100,7 @@ def _setup_db_factories(di: DiBuilder) -> None:
     )
     di.bind(bind_by_type(Dependent(build_sa_session, scope=DiScope.REQUEST), AsyncSession))
     di.bind(bind_by_type(Dependent(SQLAlchemyUoW, scope=DiScope.REQUEST), UnitOfWork))
+    di.bind(bind_by_type(Dependent(build_redis_client, scope=DiScope.APP), Redis))
 
 
 def _setup_repositories(di: DiBuilder):
