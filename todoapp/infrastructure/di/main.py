@@ -124,7 +124,7 @@ def _setup_repositories(di: DiBuilder):
 
     di.bind(
         bind_by_type(
-            Dependent(TaskInListFinder, scope=DiScope.REQUEST),
+            Dependent(TaskInListFinderImpl, scope=DiScope.REQUEST),
             TaskInListFinder,
             covariant=True
         )
