@@ -11,6 +11,15 @@ from didiator.interface.utils.di_builder import DiBuilder
 from didiator.middlewares.di import DiMiddleware, DiScopes
 from didiator.middlewares.logging import LoggingMiddleware
 
+from todoapp.application.auth.commands import (
+    ProduceTokens, ProduceTokensHandler,
+    RefreshTokens, RefreshTokensHandler,
+    DeactivateRefreshToken, DeactivateRefreshTokenHandler
+)
+from todoapp.application.auth.queries import (
+    AuthenticateByCredentialsHandler, AuthenticateByCredentials,
+    AuthenticateByToken, AuthenticateByTokenHandler,
+)
 from todoapp.application.task.commands import (
     CompleteTask, CompleteTaskHandler,
     CreateTask, CreateTaskHandler,
@@ -35,6 +44,10 @@ from todoapp.application.user.commands import (
     CreateUser,
     CreateUserHandler,
 )
+from todoapp.application.user.queries import(
+    GetUserByEmail, GetUserByEmailHandler,
+    GetUserById, GetUserByIdHandler
+)
 from todoapp.infrastructure.di import DiScope
 
 
@@ -52,7 +65,15 @@ def init_mediator(di_builder: DiBuilder) -> Mediator:
 
 
 def setup_mediator(mediator: Mediator) -> None:
+    mediator.register_command_handler(ProduceTokens, ProduceTokensHandler)
+    mediator.register_command_handler(RefreshTokens, RefreshTokensHandler)
+    mediator.register_command_handler(DeactivateRefreshToken, DeactivateRefreshTokenHandler)
+    mediator.register_query_handler(AuthenticateByToken, AuthenticateByTokenHandler)
+    mediator.register_query_handler(AuthenticateByCredentials, AuthenticateByCredentialsHandler)
+
     mediator.register_command_handler(CreateUser, CreateUserHandler)
+    mediator.register_query_handler(GetUserByEmail, GetUserByEmailHandler)
+    mediator.register_query_handler(GetUserById, GetUserByIdHandler)
 
     mediator.register_command_handler(CompleteTask, CompleteTaskHandler)
     mediator.register_command_handler(CreateTask, CreateTaskHandler)
