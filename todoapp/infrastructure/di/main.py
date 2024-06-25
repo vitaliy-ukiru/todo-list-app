@@ -129,3 +129,12 @@ def _setup_repositories(di: DiBuilder):
             covariant=True
         )
     )
+
+    from todoapp.application.auth.interfaces.repository import TokensRepo
+    di.bind(
+        bind_by_type(
+            Dependent(TokensRepoImpl, scope=DiScope.REQUEST),
+            TokensRepo,
+            covariant=True
+        )
+    )
