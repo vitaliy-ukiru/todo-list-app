@@ -37,7 +37,7 @@ from todoapp.infrastructure.db.repositories import (
 from todoapp.infrastructure.db.repositories.task_list import TaskInListFinder
 from todoapp.infrastructure.db.uow import SQLAlchemyUoW
 from todoapp.infrastructure.mediator import get_mediator
-from todoapp.infrastructure.passhash.bcrypt import BcryptPasswordHasher
+from todoapp.infrastructure.auth.bcrypt import BcryptPasswordHasher
 from todoapp.infrastructure.redis.main import build_redis_client
 from .constants import DiScope
 from ..auth.repository import TokensRepoImpl
