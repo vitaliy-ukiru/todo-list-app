@@ -8,6 +8,7 @@ from fastapi import FastAPI
 
 from todoapp.common.settings import Config
 from todoapp.presentation.api.controllers import setup_controllers
+from todoapp.presentation.api.controllers.exceptions import setup_exception_handlers
 from todoapp.presentation.api.providers import setup_providers
 
 
@@ -24,6 +25,7 @@ def init_api(
     )
     setup_providers(app, mediator, di_builder, di_state)
     setup_controllers(app)
+    setup_exception_handlers(app)
     return app
 
 
