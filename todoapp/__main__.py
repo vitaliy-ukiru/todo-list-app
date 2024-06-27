@@ -21,7 +21,7 @@ async def main():
     setup_di_builder(di_builder, config)
 
     async with di_builder.enter_scope(DiScope.APP) as di_state:
-        app = init_api(mediator, di_builder, di_state)
+        app = init_api(mediator, di_builder, di_state, debug=False)
 
         await run_api(app, config)
 
