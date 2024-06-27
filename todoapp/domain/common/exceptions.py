@@ -6,7 +6,7 @@ from typing import ClassVar
 class AppError(Exception):
     """Base Error."""
 
-    status: ClassVar[int] = 500
+    code: ClassVar[str] = "APP_ERROR"
 
     @property
     def title(self) -> str:

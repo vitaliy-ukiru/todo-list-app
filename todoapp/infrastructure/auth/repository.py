@@ -23,7 +23,7 @@ class TokensRepoImpl(TokensRepo):
         key = self._build_key(token_key)
         access_token_id = await self._client.get(key)
         if access_token_id is None:
-            raise RefreshTokenNotFound(token_key.refresh_token_id)
+            raise RefreshTokenNotFound()
 
         if isinstance(access_token_id, bytes):
             access_token_id = access_token_id.decode("utf-8")
@@ -33,7 +33,7 @@ class TokensRepoImpl(TokensRepo):
     async def delete_token(self, key: TokenKey):
         count_of_delete_items = await self._client.delete(self._build_key(key))
         if count_of_delete_items == 0:
-            raise RefreshTokenNotFound(key.refresh_token_id)
+            raise RefreshTokenNotFound()
 
     @staticmethod
     def _build_key(token: TokenKey) -> str:

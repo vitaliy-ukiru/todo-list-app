@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import ClassVar
 from uuid import UUID
 
 from todoapp.application.common.exceptions import ApplicationError
@@ -7,6 +8,8 @@ from todoapp.application.common.exceptions import ApplicationError
 @dataclass(eq=False)
 class TaskListAlreadyExistsError(ApplicationError):
     task_list_id: UUID
+
+    code: ClassVar[str] = "TASK_LIST_ALREADY_EXISTS"
 
     @property
     def title(self) -> str:
@@ -17,6 +20,8 @@ class TaskListAlreadyExistsError(ApplicationError):
 class TaskListNotExistsError(ApplicationError):
     task_list_id: UUID
 
+    code: ClassVar[str] = "TASK_LIST_NOT_EXISTS"
+
     @property
     def title(self) -> str:
         return f'''A task list with the "{self.task_list_id}" id doesn't exists'''
@@ -25,6 +30,8 @@ class TaskListNotExistsError(ApplicationError):
 @dataclass(eq=False)
 class TaskListAccessError(ApplicationError):
     task_list_id: UUID
+
+    code: ClassVar[str] = "TASK_LIST_ACCESS_DENIED"
 
     @property
     def title(self) -> str:

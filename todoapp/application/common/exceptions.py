@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from typing import ClassVar
 
 from todoapp.domain.common.exceptions import AppError
 
@@ -12,6 +12,7 @@ class ApplicationError(AppError):
 
 
 class UnexpectedError(ApplicationError):
+    code: ClassVar[str] = "UNEXPECTED_ERROR"
     pass
 
 

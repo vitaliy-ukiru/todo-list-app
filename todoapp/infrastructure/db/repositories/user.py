@@ -7,7 +7,7 @@ from sqlalchemy.exc import DBAPIError, IntegrityError
 from todoapp.application.common.exceptions import RepoError
 from todoapp.application.user import dto
 from todoapp.application.user.exceptions import UserIdAlreadyExistsError, UserIdNotExistError, \
-    EmailNotExistError
+    UserEmailNotExistError
 from todoapp.application.user.interfaces import UserRepo
 from todoapp.domain.user import entities
 from todoapp.domain.user.entities import UserId
@@ -36,7 +36,7 @@ class UserRepoImpl(SQLAlchemyRepo, UserRepo):
             select(User).where(User.email == email)
         )
         if user is None:
-            raise EmailNotExistError(email)
+            raise UserEmailNotExistError(email)
 
         return convert_model_to_entity(user)
 

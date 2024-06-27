@@ -4,7 +4,7 @@ from didiator import QueryMediator
 
 from todoapp.application.auth.exceptions import InvalidCredentials
 from todoapp.application.common.query import Query, QueryHandler
-from todoapp.application.user.exceptions import EmailNotExistError
+from todoapp.application.user.exceptions import UserEmailNotExistError
 from todoapp.application.user.queries import GetUserByEmail
 from todoapp.domain.user.entities import UserId, User, PasswordHasher
 from todoapp.domain.user.exceptions import UserIsDeletedError
@@ -24,7 +24,7 @@ class AuthenticateByCredentialsHandler(QueryHandler[AuthenticateByCredentials, U
     async def __call__(self, query: AuthenticateByCredentials) -> UserId:
         try:
             user = await self.mediator.query(GetUserByEmail(email=query.email))
-        except (EmailNotExistError, UserIsDeletedError):
+        except (UserEmailNotExistError, UserIsDeletedError):
             raise InvalidCredentials()
 
         if not user.verify_password(self.hasher, query.password):

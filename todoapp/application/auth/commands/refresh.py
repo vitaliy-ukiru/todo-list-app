@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from didiator import CommandMediator
 
 from todoapp.application.auth import dto
-from todoapp.application.auth.exceptions import MismatchAccessToken
+from todoapp.application.auth.exceptions import MismatchedAccessToken
 from todoapp.application.auth.interfaces.repository import TokensRepo, TokenKey
 from todoapp.application.auth.jwt import JWTAuthenticator
 from todoapp.application.common.command import Command, CommandHandler
@@ -28,7 +28,7 @@ class RefreshTokensHandler(CommandHandler[RefreshTokens, dto.Tokens]):
         access_token = self.auth.decode_access_token(command.access_token, False)
 
         if refresh_token.user_id != access_token.user_id:
-            raise MismatchAccessToken()
+            raise MismatchedAccessToken()
 
         key = TokenKey(user_id=refresh_token.user_id, refresh_token_id=refresh_token.token_id, )
         db_access_token_id = await self.repo.get_token(
@@ -36,7 +36,7 @@ class RefreshTokensHandler(CommandHandler[RefreshTokens, dto.Tokens]):
         )
 
         if access_token.token_id != db_access_token_id:
-            raise MismatchAccessToken()
+            raise MismatchedAccessToken()
 
         await self.repo.delete_token(key)
 
