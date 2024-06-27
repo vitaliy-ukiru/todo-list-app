@@ -43,7 +43,7 @@ class Task(BaseEntity[TaskId]):
         )
 
     def set_name(self, name: str):
-        if name not in range(MIN_NAME_LENGTH, MAX_NAME_LENGTH + 1):
+        if MIN_NAME_LENGTH <= len(name) <= MAX_NAME_LENGTH:
             raise TaskNameOutOfRange()
 
         self.name = name
