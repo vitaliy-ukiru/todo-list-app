@@ -24,8 +24,8 @@ class DeleteTaskListHandler(CommandHandler[DeleteTaskList, None]):
         user_id = UserId(command.user_id)
         list_id = ListId(command.list_id)
 
-        task = await self.list_repo.acquire_task_list_by_id(list_id)
-        if not task.is_have_access(user_id):
+        task_list = await self.list_repo.acquire_task_list_by_id(list_id)
+        if not task_list.is_have_access(user_id):
             raise TaskAccessError(list_id)
 
         await self.list_repo.delete_task_list(list_id)
