@@ -57,13 +57,8 @@ class TaskList(TaskListDetails):
         if not task.is_have_access(self.user_id):
             raise TaskAccessError(task.id)
 
-        err = TaskAlreadyInList(task.id, self.id)
-
-        if task.list_id == self.id:
-            raise err
-
-        if task in self.tasks:
-            raise err from TaskInListConflict(task.id, self.id)
+        if task.list_id == self.id or task in self.tasks:
+            raise TaskAlreadyInList(task.id, self.id)
 
         task.list_id = task
         self.tasks.append(task)
