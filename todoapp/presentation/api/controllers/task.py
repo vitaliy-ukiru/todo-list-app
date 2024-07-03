@@ -4,19 +4,39 @@ from uuid import UUID
 from didiator import Mediator
 from fastapi import APIRouter, Depends
 
-from todoapp.application.task.commands import CreateTask, DeleteTask, CompleteTask, PutTaskInList, \
-    UpdateTask
+from todoapp.application.task.commands import (CreateTask, DeleteTask, CompleteTask, PutTaskInList,
+                                               UpdateTask)
+from todoapp.application.task.exceptions import TaskAccessError
 from todoapp.application.task.queries import GetTaskById
-from todoapp.application.task_list.exceptions import TaskListAccessError
+from todoapp.application.task_list.exceptions import TaskListAccessError, TaskListNotExistsError
 from todoapp.domain.task.entities import Task
 from todoapp.domain.user.entities import UserId
 from todoapp.presentation.api.controllers.requests.task import CreateTaskRequest, UpdateTaskRequest
 from todoapp.presentation.api.controllers.responses.base import OkResponse, OkStatus, OK_STATUS
-from todoapp.presentation.api.doc import response_error_doc, DEFAULT_UUID
+from todoapp.presentation.api.doc import response_error_doc, DEFAULT_UUID, RESPONSE_NOT_AUTHENTICATED
 from todoapp.presentation.api.providers import Stub
 from todoapp.presentation.api.providers.auth import auth_user_by_token
 
-task_router = APIRouter(prefix="/task", tags=["task"])
+task_router = APIRouter(
+    prefix="/task",
+    tags=["task"],
+    responses={
+        401: RESPONSE_NOT_AUTHENTICATED,
+    }
+)
+
+_BASE_RESPONSES = {
+    403: response_error_doc(
+        status=403,
+        description="The user does not access to the task",
+        example=TaskAccessError(DEFAULT_UUID)
+    ),
+    404: response_error_doc(
+        status=401,
+        description="The task is not exists",
+        example=TaskListNotExistsError(DEFAULT_UUID)
+    )
+}
 
 
 @task_router.post(
@@ -24,7 +44,7 @@ task_router = APIRouter(prefix="/task", tags=["task"])
     responses={
         403: response_error_doc(
             status=403,
-            description="The user does not have access to the list",
+            description="The user does not have access to the task list",
             example=TaskListAccessError(DEFAULT_UUID)
         )
     }
@@ -50,7 +70,8 @@ async def create_task(
 
 
 @task_router.get(
-    "/{task_id}"
+    "/{task_id}",
+    responses=_BASE_RESPONSES
 )
 async def get_task(
     task_id: UUID,
@@ -66,7 +87,8 @@ async def get_task(
 
 
 @task_router.delete(
-    "/{task_id}"
+    "/{task_id}",
+    responses=_BASE_RESPONSES
 )
 async def delete_task(
     task_id: UUID,
@@ -83,6 +105,7 @@ async def delete_task(
 
 @task_router.post(
     "/{task_id}/complete",
+    responses=_BASE_RESPONSES
 )
 async def complete_task(
     task_id: UUID,
@@ -97,7 +120,8 @@ async def complete_task(
 
 
 @task_router.put(
-    "/{task_id}/to-list/{list_id}",
+    "/{task_id}/to/{list_id}",
+    responses=_BASE_RESPONSES
 )
 async def put_in_list(
     task_id: UUID,
@@ -114,7 +138,8 @@ async def put_in_list(
 
 
 @task_router.put(
-    "/{task_id}"
+    "/{task_id}",
+    responses=_BASE_RESPONSES
 )
 async def update_task(
     task_id: UUID,

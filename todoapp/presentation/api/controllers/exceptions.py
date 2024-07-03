@@ -12,7 +12,8 @@ from todoapp.application.auth.exceptions import (
     InvalidToken,
     ExpiredToken,
     MismatchedAccessToken,
-    InvalidCredentials
+    InvalidCredentials,
+    AccessTokenRequired, RefreshTokenRequired
 )
 from todoapp.application.task.exceptions import (
     TaskAlreadyExistsError,
@@ -37,7 +38,6 @@ from todoapp.domain.task.exceptions import (
 from todoapp.domain.tasks_list.exception import (
     TaskAlreadyInList,
     TaskInListConflict,
-    TaskAlreadyInOtherList,
 )
 from todoapp.domain.user.exceptions import (
     UserIsDeletedError,
@@ -76,7 +76,6 @@ _TASK_LIST_EXC = {
     # domain
     TaskAlreadyInList: status.HTTP_409_CONFLICT,
     TaskInListConflict: status.HTTP_409_CONFLICT,
-    TaskAlreadyInOtherList: status.HTTP_409_CONFLICT,
 }
 
 _AUTH_EXC = {
@@ -85,6 +84,8 @@ _AUTH_EXC = {
     ExpiredToken: status.HTTP_401_UNAUTHORIZED,
     MismatchedAccessToken: status.HTTP_401_UNAUTHORIZED,
     InvalidCredentials: status.HTTP_401_UNAUTHORIZED,
+    AccessTokenRequired: status.HTTP_401_UNAUTHORIZED,
+    RefreshTokenRequired: status.HTTP_401_UNAUTHORIZED,
 }
 
 
@@ -95,7 +96,6 @@ def setup_exception_handlers(app: FastAPI) -> None:
     for exceptions in (_USER_EXC, _TASK_EXC, _TASK_LIST_EXC, _AUTH_EXC):
         for exc_type, status_code in exceptions.items():
             app.add_exception_handler(exc_type, error_handler(status_code))
-
 
 
 def error_handler(status_code: int) -> Callable[..., Awaitable[JSONResponse]]:

@@ -4,6 +4,7 @@ from didiator import QueryMediator
 from fastapi import Depends
 from fastapi.security import HTTPBearer, APIKeyCookie, HTTPAuthorizationCredentials
 
+from todoapp.application.auth.exceptions import AccessTokenRequired, RefreshTokenRequired
 from todoapp.application.auth.queries.auth_token import AuthenticateByToken
 from todoapp.application.user import dto
 from todoapp.application.user.queries import GetUserById
@@ -12,20 +13,29 @@ from todoapp.presentation.api.providers import Stub
 
 REFRESH_TOKEN_COOKIE = "refresh_token"
 
-_bearer_header = HTTPBearer()
+_bearer_header = HTTPBearer(auto_error=False)
 
 
 def bearer_header(
     creds: Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer_header)]
-) -> str | None:
+) -> str:
     if not creds:
-        return None
+        raise AccessTokenRequired()
+
     return creds.credentials
 
 
-refresh_cookie = APIKeyCookie(
-    name=REFRESH_TOKEN_COOKIE
+optional_refresh_cookie = APIKeyCookie(
+    name=REFRESH_TOKEN_COOKIE,
+    auto_error=False,
 )
+
+
+def refresh_cookie(token: Annotated[str | None, Depends(optional_refresh_cookie)]) -> str:
+    if not token:
+        raise RefreshTokenRequired()
+
+    return token
 
 
 async def auth_user_by_token(

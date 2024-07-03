@@ -47,3 +47,20 @@ class InvalidCredentials(ApplicationError):
     @property
     def title(self) -> str:
         return "Invalid credentials"
+
+
+@dataclass(eq=False)
+class AccessTokenRequired(ApplicationError):
+    code: ClassVar[str] = "ACCESS_TOKEN_REQUIRED"
+
+    @property
+    def title(self) -> str:
+        return "No Bearer token in Authorization header"
+
+@dataclass(eq=False)
+class RefreshTokenRequired(ApplicationError):
+    code: ClassVar[str] = "ACCESS_TOKEN_REQUIRED"
+
+    @property
+    def title(self) -> str:
+        return "No Bearer token in Authorization header"

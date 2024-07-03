@@ -5,17 +5,38 @@ from didiator import Mediator
 from fastapi import APIRouter, Depends
 
 from todoapp.application.task_list.commands import CreateTaskList, DeleteTaskList, AddTaskToList
+from todoapp.application.task_list.exceptions import TaskListAccessError, TaskListNotExistsError
 from todoapp.application.task_list.queries import GetListById
 from todoapp.domain.tasks_list.entities import TaskList
+from todoapp.domain.tasks_list.exception import TaskAlreadyInList
 from todoapp.domain.user.entities import UserId
 from todoapp.presentation.api.controllers.requests.task_list import CreateTaskListRequest
 from todoapp.presentation.api.controllers.responses.base import OkResponse, OkStatus, OK_STATUS
 from todoapp.presentation.api.controllers.responses.task_list import TaskListIdResponse
+from todoapp.presentation.api.doc import RESPONSE_NOT_AUTHENTICATED, response_error_doc, DEFAULT_UUID
 from todoapp.presentation.api.providers import Stub
 from todoapp.presentation.api.providers.auth import auth_user_by_token
 
-task_list_router = APIRouter(prefix="/task-list", tags=["task-list"])
+task_list_router = APIRouter(
+    prefix="/task-list",
+    tags=["task-list"],
+    responses={
+        401: RESPONSE_NOT_AUTHENTICATED,
+    }
+)
 
+_BASE_RESPONSES = {
+    403: response_error_doc(
+        status=403,
+        description="The user does not have access to the task list",
+        example=TaskListAccessError(DEFAULT_UUID)
+    ),
+    404: response_error_doc(
+        status=401,
+        description="The task list is not exists",
+        example=TaskListNotExistsError(DEFAULT_UUID)
+    )
+}
 
 @task_list_router.post("/")
 async def create_task_list(
@@ -31,7 +52,7 @@ async def create_task_list(
     return OkResponse(result=TaskListIdResponse(list_id=task_list_id))
 
 
-@task_list_router.get("/{list_id}")
+@task_list_router.get("/{list_id}", responses=_BASE_RESPONSES)
 async def get_task_list(
     meditor: Annotated[Mediator, Depends(Stub(Mediator))],
     user_id: Annotated[UserId, Depends(auth_user_by_token)],
@@ -41,7 +62,7 @@ async def get_task_list(
     return OkResponse(result=task_list)
 
 
-@task_list_router.delete("/{list_id}")
+@task_list_router.delete("/{list_id}", responses=_BASE_RESPONSES)
 async def delete_task_list(
     meditor: Annotated[Mediator, Depends(Stub(Mediator))],
     user_id: Annotated[UserId, Depends(auth_user_by_token)],
@@ -51,7 +72,16 @@ async def delete_task_list(
     return OK_STATUS
 
 
-@task_list_router.put("/{list_id}/add/{task_id}")
+@task_list_router.put(
+    "/{list_id}/add/{task_id}",
+    responses=_BASE_RESPONSES | {
+        409: response_error_doc(
+            status=409,
+            description="Task already in list",
+            example=TaskAlreadyInList(DEFAULT_UUID, DEFAULT_UUID)
+        )
+    }
+)
 async def add_task_to_list(
     meditor: Annotated[Mediator, Depends(Stub(Mediator))],
     user_id: Annotated[UserId, Depends(auth_user_by_token)],
