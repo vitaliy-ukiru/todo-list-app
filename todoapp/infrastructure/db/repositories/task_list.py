@@ -8,6 +8,7 @@ from sqlalchemy.sql.functions import count
 
 from todoapp.application.common.exceptions import RepoError
 from todoapp.application.common.pagination import Pagination
+from todoapp.application.task_list import dto
 from todoapp.application.task_list.exceptions import TaskListAlreadyExistsError, TaskListNotExistsError
 from todoapp.application.task_list.interfaces import TaskListRepo
 from todoapp.application.task_list.dto import FindTaskListsFilters
@@ -84,7 +85,7 @@ class TaskListRepoImpl(SQLAlchemyRepo, TaskListRepo):
         query = self._apply_filters(query, filters)
         query = self.apply_pagination(query, pagination)
         result: Iterable[TaskList] = await self._session.scalars(query)
-        lists = [convert_model_to_entity_details(task_list) for task_list in result]
+        lists = [convert_model_to_dto_details(task_list) for task_list in result]
         return lists
 
     @exception_mapper
@@ -121,9 +122,17 @@ def convert_details_entity_to_model(task_list: entities.TaskListDetails) -> Task
 
 def convert_model_to_entity_details(task_list: TaskList) -> entities.TaskListDetails:
     return entities.TaskListDetails(
-        id=task_list.id,
+        id=vo.ListId(task_list.id),
         name=task_list.name,
         user_id=UserId(task_list.user_id),
+        created_at=task_list.created_at,
+    )
+
+def convert_model_to_dto_details(task_list: TaskList) -> dto.TaskListDetails:
+    return dto.TaskListDetails(
+        id=task_list.id,
+        name=task_list.name,
+        user_id=task_list.user_id,
         created_at=task_list.created_at,
     )
 

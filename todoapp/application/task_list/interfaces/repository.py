@@ -2,6 +2,7 @@ from abc import abstractmethod
 from typing import Protocol
 
 from todoapp.application.common.pagination import Pagination
+from todoapp.application.task_list import dto
 from todoapp.application.task_list.dto import FindTaskListsFilters
 from todoapp.domain.tasks_list import entities
 from todoapp.domain.tasks_list import value_objects as vo
@@ -29,7 +30,7 @@ class TaskListRepo(Protocol):
         self,
         filters: FindTaskListsFilters,
         pagination: Pagination
-    ) -> list[entities.TaskListDetails]:
+    ) -> list[dto.TaskListDetails]:
         raise NotImplementedError
 
     @abstractmethod

@@ -5,12 +5,12 @@ from didiator import Mediator
 from fastapi import APIRouter, Depends
 
 from todoapp.application.common.pagination import Pagination
+from todoapp.application.task_list import dto
 from todoapp.application.task_list.commands import CreateTaskList, DeleteTaskList, AddTaskToList
 from todoapp.application.task_list.dto import TaskListsDTO, FindTaskListsFilters
 from todoapp.application.task_list.exceptions import TaskListAccessError, TaskListNotExistsError
 from todoapp.application.task_list.queries import GetListById
 from todoapp.application.task_list.queries.find_tasks_lists import FindTaskLists
-from todoapp.domain.tasks_list.entities import TaskList
 from todoapp.domain.tasks_list.exception import TaskAlreadyInList
 from todoapp.domain.user.entities import UserId
 from todoapp.presentation.api.controllers.requests.task_list import CreateTaskListRequest
@@ -42,6 +42,7 @@ _BASE_RESPONSES = {
     )
 }
 
+
 @task_list_router.post("/")
 async def create_task_list(
     meditor: Annotated[Mediator, Depends(Stub(Mediator))],
@@ -61,7 +62,7 @@ async def get_task_list(
     meditor: Annotated[Mediator, Depends(Stub(Mediator))],
     user_id: Annotated[UserId, Depends(auth_user_by_token)],
     list_id: UUID,
-) -> OkResponse[TaskList]:
+) -> OkResponse[dto.TaskList]:
     task_list = await meditor.query(GetListById(list_id=list_id, user_id=user_id))
     return OkResponse(result=task_list)
 
@@ -91,7 +92,7 @@ async def add_task_to_list(
     user_id: Annotated[UserId, Depends(auth_user_by_token)],
     list_id: UUID,
     task_id: UUID,
-) -> OkResponse[TaskList]:
+) -> OkResponse[dto.TaskList]:
     task_list = await meditor.send(AddTaskToList(
         list_id=list_id,
         task_id=task_id,
@@ -108,7 +109,6 @@ async def find_tasks(
     pagination: Annotated[Pagination, Depends(get_pagination)],
     name: str | None = None,
 ) -> OkResponse[TaskListsDTO]:
-
     filters = FindTaskListsFilters(
         user_id=user_id,
         name=name,
