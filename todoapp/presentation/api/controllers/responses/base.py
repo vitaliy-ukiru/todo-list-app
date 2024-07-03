@@ -14,7 +14,7 @@ class Response(BaseModel):
 
 
 class OkResponse(Response, Generic[TResult]):
-    ok: Annotated[bool, Field(default=True, init=False)]
+    ok: bool = True
     result: TResult | None = None
 
 
@@ -39,9 +39,8 @@ class ErrorResponse(Response, Generic[TError]):
     error: Annotated[ErrorData[TError], Field(default_factory=ErrorData)]
 
 
-@dataclass(frozen=True)
-class OkStatus:
-    status: str = "ok"
+class OkStatus(Response):
+    ok: bool = True
 
 
 OK_STATUS = OkStatus()

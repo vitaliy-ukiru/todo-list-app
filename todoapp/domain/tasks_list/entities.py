@@ -12,9 +12,15 @@ from todoapp.domain.tasks_list.exception import TaskInListConflict, TaskAlreadyI
 from todoapp.domain.tasks_list.value_objects import ListId
 from todoapp.domain.user.entities import UserId
 
+MAX_TASK_LIST_NAME_LENGTH = 500
+MIN_TASK_LIST_NAME_LENGTH = 3
+
 
 class TaskListDetails(BaseEntity[ListId]):
-    name: Annotated[str, Field(min_length=3, max_length=500)]
+    name: Annotated[
+        str,
+        Field(min_length=MIN_TASK_LIST_NAME_LENGTH, max_length=MAX_TASK_LIST_NAME_LENGTH)
+    ]
     user_id: UserId
 
     def is_have_access(self, user_id: UserId) -> bool:
@@ -51,12 +57,13 @@ class TaskList(TaskListDetails):
         if not task.is_have_access(self.user_id):
             raise TaskAccessError(task.id)
 
+        err = TaskAlreadyInList(task.id, self.id)
+
         if task.list_id == self.id:
-            raise TaskAlreadyInList(task.id, self.id)
+            raise err
 
         if task in self.tasks:
-            raise TaskAlreadyInList(task.id, self.id) \
-                from TaskInListConflict(task.id, self.id)
+            raise err from TaskInListConflict(task.id, self.id)
 
         task.list_id = task
         self.tasks.append(task)
