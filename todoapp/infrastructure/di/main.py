@@ -18,13 +18,13 @@ from todoapp.application.auth.jwt import JWTAuthenticator
 from todoapp.application.common.interfaces.uow import UnitOfWork
 from todoapp.application.task.interfaces.repository import TaskRepo
 from todoapp.application.task_list.interfaces import TaskListRepo
-from todoapp.application.task_list.interfaces.task_mover import TaskMover
 from todoapp.application.user.interfaces import UserRepo
 from todoapp.common.settings import (
     Config,
     DatabaseConfig, AuthConfig
 )
 from todoapp.domain.user.entities import PasswordHasher
+from todoapp.infrastructure.auth.bcrypt import BcryptPasswordHasher
 from todoapp.infrastructure.auth.di import get_jwt_authenticator
 from todoapp.infrastructure.db.main import (
     build_sa_engine,
@@ -32,12 +32,11 @@ from todoapp.infrastructure.db.main import (
     build_sa_session_factory
 )
 from todoapp.infrastructure.db.repositories import (
-    UserRepoImpl, TaskRepoImpl, TaskListRepoImpl, TaskMoverImpl, TaskInListFinderImpl
+    UserRepoImpl, TaskRepoImpl, TaskListRepoImpl, TaskInListFinderImpl
 )
 from todoapp.infrastructure.db.repositories.task_list import TaskInListFinder
 from todoapp.infrastructure.db.uow import SQLAlchemyUoW
 from todoapp.infrastructure.mediator import get_mediator
-from todoapp.infrastructure.auth.bcrypt import BcryptPasswordHasher
 from todoapp.infrastructure.redis.main import build_redis_client
 from .constants import DiScope
 from ..auth.repository import TokensRepoImpl
@@ -125,14 +124,6 @@ def _setup_repositories(di: DiBuilder):
             Dependent(TaskListRepoImpl, scope=DiScope.REQUEST),
             TaskListRepo,
             covariant=True,
-        )
-    )
-
-    di.bind(
-        bind_by_type(
-            Dependent(TaskMoverImpl, scope=DiScope.REQUEST),
-            TaskMover,
-            covariant=True
         )
     )
 
