@@ -32,8 +32,8 @@ def init_api(
 async def run_api(app: FastAPI, config: Config) -> None:
     config = uvicorn.Config(
         app,
-        host=config.host,
-        port=config.port,
+        host=config.api_host,
+        port=config.api_port,
         log_level=logging.INFO,
         log_config=None,
         server_header=False,

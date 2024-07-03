@@ -48,7 +48,7 @@ class Config(BaseSettings):
     db: Annotated[DatabaseConfig, Field(default_factory=DatabaseConfig)]
     auth: Annotated[AuthConfig, Field(default_factory=AuthConfig)]
     redis_url: Annotated[RedisDsn, Field(default="redis://127.0.0.1:6379")]
-    host: str = "localhost"
-    port: int = 8000
+    api_host: str = "localhost"
+    api_port: int = 8000
 
     model_config = _model_config()
