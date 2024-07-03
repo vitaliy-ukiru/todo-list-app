@@ -3,6 +3,7 @@ import logging
 
 from todoapp.common.settings import Config
 from todoapp.infrastructure.di import DiScope, init_di_builder, setup_di_builder
+from todoapp.infrastructure.di.main import before_launch
 from todoapp.infrastructure.mediator import init_mediator, setup_mediator
 from todoapp.presentation.api.main import init_api, run_api
 
@@ -21,6 +22,7 @@ async def main():
     setup_di_builder(di_builder, config)
 
     async with di_builder.enter_scope(DiScope.APP) as di_state:
+        await before_launch(di_builder, di_state)
         app = init_api(mediator, di_builder, di_state, debug=False)
 
         await run_api(app, config)
