@@ -16,20 +16,20 @@ from todoapp.domain.user.entities import UserId
 
 
 @dataclass
-class AddTaskInList(Command[Task]):
+class AddTaskToList(Command[TaskList]):
     task_id: UUID
     user_id: UUID
     list_id: UUID
 
 
 @dataclass
-class AddTaskInListHandler(CommandHandler[AddTaskInList, TaskList]):
+class AddTaskToListHandler(CommandHandler[AddTaskToList, TaskList]):
     uow: UnitOfWork
     list_repo: TaskListRepo
     task_repo: TaskRepo
     mediator: Mediator
 
-    async def __call__(self, command: AddTaskInList) -> TaskList:
+    async def __call__(self, command: AddTaskToList) -> TaskList:
         user_id = UserId(command.user_id)
 
         task = await self.mediator.query(GetTaskById(
