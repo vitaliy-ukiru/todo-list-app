@@ -1,19 +1,9 @@
 from abc import abstractmethod
 from typing import Protocol
-from uuid import UUID
-
-from pydantic import BaseModel
 
 from todoapp.application.common.pagination import Pagination
-from todoapp.domain.common.constants import Empty
+from todoapp.application.task.dto.tasks import FindTasksFilters
 from todoapp.domain.task.entities import Task, TaskId
-
-
-class FindTasksFilters(BaseModel):
-    name: str | None = None
-    desc: str | None = None
-    completed: bool | Empty = Empty.UNSET
-    list_id: UUID | None | Empty = Empty.UNSET
 
 
 class TaskRepo(Protocol):

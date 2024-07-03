@@ -7,7 +7,8 @@ from sqlalchemy.sql.functions import count
 from todoapp.application.common.exceptions import RepoError
 from todoapp.application.common.pagination import Pagination, SortOrder
 from todoapp.application.task.exceptions import TaskAlreadyExistsError, TaskNotExistsError
-from todoapp.application.task.interfaces.repository import TaskRepo, FindTasksFilters
+from todoapp.application.task.interfaces.repository import TaskRepo
+from todoapp.application.task.dto.tasks import FindTasksFilters
 from todoapp.domain.common.constants import Empty
 from todoapp.domain.task import entities
 from todoapp.domain.task.entities import TaskId
@@ -91,6 +92,8 @@ class TaskRepoImpl(SQLAlchemyRepo, TaskRepo):
 
     @staticmethod
     def _apply_filters(query: Select, filters: FindTasksFilters) -> Select:
+        query = query.where(Task.user_id == filters.user_id)
+
         if filters.name:
             query = query.where(Task.name.icontains(filters.name))
 
@@ -98,7 +101,9 @@ class TaskRepoImpl(SQLAlchemyRepo, TaskRepo):
             query = query.where(Task.desc.icontains(filters.desc))
 
         if filters.completed is not Empty.UNSET:
-            query = query.where(Task.done_at.is_(filters.completed))
+            query = query.where(
+                Task.done_at.is_not(None) if filters.completed else Task.done_at.is_(None)
+            )
 
         if filters.list_id is not Empty.UNSET:
             if filters.list_id is None:

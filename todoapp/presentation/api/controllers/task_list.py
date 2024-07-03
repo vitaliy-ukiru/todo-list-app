@@ -4,9 +4,12 @@ from uuid import UUID
 from didiator import Mediator
 from fastapi import APIRouter, Depends
 
+from todoapp.application.common.pagination import Pagination
 from todoapp.application.task_list.commands import CreateTaskList, DeleteTaskList, AddTaskToList
+from todoapp.application.task_list.dto import TaskListsDTO, FindTaskListsFilters
 from todoapp.application.task_list.exceptions import TaskListAccessError, TaskListNotExistsError
 from todoapp.application.task_list.queries import GetListById
+from todoapp.application.task_list.queries.find_tasks_lists import FindTaskLists
 from todoapp.domain.tasks_list.entities import TaskList
 from todoapp.domain.tasks_list.exception import TaskAlreadyInList
 from todoapp.domain.user.entities import UserId
@@ -16,6 +19,7 @@ from todoapp.presentation.api.controllers.responses.task_list import TaskListIdR
 from todoapp.presentation.api.doc import RESPONSE_NOT_AUTHENTICATED, response_error_doc, DEFAULT_UUID
 from todoapp.presentation.api.providers import Stub
 from todoapp.presentation.api.providers.auth import auth_user_by_token
+from todoapp.presentation.api.providers.pagination import get_pagination
 
 task_list_router = APIRouter(
     prefix="/task-list",
@@ -94,3 +98,24 @@ async def add_task_to_list(
         user_id=user_id,
     ))
     return OkResponse(result=task_list)
+
+
+@task_list_router.get("/")
+async def find_tasks(
+    meditor: Annotated[Mediator, Depends(Stub(Mediator))],
+    user_id: Annotated[UserId, Depends(auth_user_by_token)],
+
+    pagination: Annotated[Pagination, Depends(get_pagination)],
+    name: str | None = None,
+) -> OkResponse[TaskListsDTO]:
+
+    filters = FindTaskListsFilters(
+        user_id=user_id,
+        name=name,
+    )
+
+    tasks = await meditor.query(FindTaskLists(
+        filters=filters,
+        pagination=pagination,
+    ))
+    return OkResponse(result=tasks)

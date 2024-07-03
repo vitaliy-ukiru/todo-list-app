@@ -34,5 +34,5 @@ class PaginationResult(DTO):
 
 
 class PaginatedItemsDTO(DTO, Generic[Item]):
-    data: list[Item]
+    items: list[Item]
     pagination: PaginationResult

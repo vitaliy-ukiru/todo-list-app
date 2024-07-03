@@ -1,14 +1,17 @@
-from typing import Annotated
+from typing import Annotated, Literal, cast
 from uuid import UUID
 
 from didiator import Mediator
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 
+from todoapp.application.common.pagination import Pagination
 from todoapp.application.task.commands import (CreateTask, DeleteTask, CompleteTask, PutTaskInList,
                                                UpdateTask)
+from todoapp.application.task.dto.tasks import FindTasksFilters, TasksDTO
 from todoapp.application.task.exceptions import TaskAccessError
-from todoapp.application.task.queries import GetTaskById
+from todoapp.application.task.queries import GetTaskById, FindTasks
 from todoapp.application.task_list.exceptions import TaskListAccessError, TaskListNotExistsError
+from todoapp.domain.common.constants import Empty
 from todoapp.domain.task.entities import Task
 from todoapp.domain.user.entities import UserId
 from todoapp.presentation.api.controllers.requests.task import CreateTaskRequest, UpdateTaskRequest
@@ -16,6 +19,7 @@ from todoapp.presentation.api.controllers.responses.base import OkResponse, OkSt
 from todoapp.presentation.api.doc import response_error_doc, DEFAULT_UUID, RESPONSE_NOT_AUTHENTICATED
 from todoapp.presentation.api.providers import Stub
 from todoapp.presentation.api.providers.auth import auth_user_by_token
+from todoapp.presentation.api.providers.pagination import get_pagination
 
 task_router = APIRouter(
     prefix="/task",
@@ -153,3 +157,35 @@ async def update_task(
         **body.model_dump(exclude_unset=True)
     ))
     return OkResponse(result=task)
+
+
+@task_router.get("/")
+async def find_tasks(
+    meditor: Annotated[Mediator, Depends(Stub(Mediator))],
+    user_id: Annotated[UserId, Depends(auth_user_by_token)],
+
+    pagination: Annotated[Pagination, Depends(get_pagination)],
+    name: str | None = None,
+    desc: str | None = None,
+    completed: bool | None = None,
+    list_id: Annotated[UUID | Literal["null"] | None, Query()] = None,
+
+) -> OkResponse[TasksDTO]:
+    if list_id is None:
+        list_id = Empty.UNSET
+    elif list_id == "null":
+        list_id = None
+
+    filters = FindTasksFilters(
+        user_id=user_id,
+        name=name,
+        desc=desc,
+        completed=completed if completed is not None else Empty.UNSET,
+        list_id=cast(UUID | None | Empty, list_id),
+    )
+
+    tasks = await meditor.query(FindTasks(
+        filters=filters,
+        pagination=pagination,
+    ))
+    return OkResponse(result=tasks)

@@ -10,7 +10,7 @@ from todoapp.application.common.exceptions import RepoError
 from todoapp.application.common.pagination import Pagination
 from todoapp.application.task_list.exceptions import TaskListAlreadyExistsError, TaskListNotExistsError
 from todoapp.application.task_list.interfaces import TaskListRepo
-from todoapp.application.task_list.interfaces.repository import FindTaskListsFilters
+from todoapp.application.task_list.dto import FindTaskListsFilters
 from todoapp.domain.task.entities import Task
 from todoapp.domain.tasks_list import entities
 from todoapp.domain.tasks_list import value_objects as vo
@@ -106,9 +106,6 @@ class TaskListRepoImpl(SQLAlchemyRepo, TaskListRepo):
         query = query.where(TaskList.user_id == filters.user_id)
         if filters.user_id is not None:
             query = query.where(TaskList.name.icontains(filters.user_id))
-
-        if not filters.include_deleted:
-            query = query.where(TaskList.deleted_at.is_not(None))
 
         return query
 

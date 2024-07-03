@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 
 from todoapp.application.common.pagination import Pagination
-from todoapp.application.task.interfaces.repository import TaskRepo, FindTasksFilters
+from todoapp.application.task.interfaces.repository import TaskRepo
+from todoapp.application.task.dto.tasks import FindTasksFilters
 from todoapp.domain.task.entities import Task
 from todoapp.domain.tasks_list import value_objects as vo
 from .task_list import TaskInListFinder
