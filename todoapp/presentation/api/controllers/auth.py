@@ -88,7 +88,7 @@ async def refresh_tokens(
     response.set_cookie(
         key=REFRESH_TOKEN_COOKIE,
         value=tokens.refresh_token,
-        max_age=cfg.refresh_token_expires.seconds,
+        max_age=int(cfg.refresh_token_expires.total_seconds()),
         httponly=True,
         path="/auth"
     )
@@ -113,10 +113,9 @@ async def refresh_tokens(
 async def logout(
     mediator: Annotated[Mediator, Depends(Stub(Mediator))],
     refresh_token: Annotated[str, Depends(refresh_cookie)],
-
     response: Response,
 ) -> OkStatus:
-    response.delete_cookie(refresh_cookie.model.name)
+    response.delete_cookie(REFRESH_TOKEN_COOKIE)
     await mediator.send(DeactivateRefreshToken(
         refresh_token=refresh_token,
     ))
