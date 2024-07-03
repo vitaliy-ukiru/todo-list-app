@@ -28,7 +28,7 @@ class UserRepoImpl(SQLAlchemyRepo, UserRepo):
         if user is None:
             raise UserIdNotExistError(user_id)
 
-        return convert_model_to_entity(user)
+        return convert_model_to_dto(user)
 
     @exception_mapper
     async def acquire_user_by_email(self, email: str) -> entities.User:
