@@ -13,6 +13,7 @@ class TaskListDetails(DTO):
     user_id: UUID
     name: str
     created_at: datetime
+    public: bool
 
     @classmethod
     def from_entity(cls, entity: entities.TaskList) -> Self:
@@ -21,6 +22,7 @@ class TaskListDetails(DTO):
             user_id=entity.user_id,
             name=entity.name,
             created_at=entity.created_at,
+            public=entity.sharing.public,
         )
 
 
@@ -32,6 +34,7 @@ class TaskList(DTO):
     user_id: UUID
     name: str
     created_at: datetime
+    public: bool
     tasks: list[TaskDTO]
 
     @classmethod
@@ -42,6 +45,7 @@ class TaskList(DTO):
             name=entity.name,
             created_at=entity.created_at,
             tasks=tasks,
+            public=entity.sharing.public
         )
 
 
