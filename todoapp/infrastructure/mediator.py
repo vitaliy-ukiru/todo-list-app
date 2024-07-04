@@ -45,7 +45,7 @@ from todoapp.application.user.commands import (
     CreateUser,
     CreateUserHandler,
 )
-from todoapp.application.user.queries import(
+from todoapp.application.user.queries import (
     GetUserByEmail, GetUserByEmailHandler,
     GetUserById, GetUserByIdHandler
 )
