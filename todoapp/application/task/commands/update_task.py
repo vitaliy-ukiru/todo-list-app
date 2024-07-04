@@ -3,6 +3,7 @@ from uuid import UUID
 
 from todoapp.application.common.command import Command, CommandHandler
 from todoapp.application.common.interfaces.uow import UnitOfWork
+from todoapp.application.task.dto import Task
 from todoapp.application.task.exceptions import TaskAccessError
 from todoapp.application.task.interfaces.repository import TaskRepo
 from todoapp.domain.common.constants import Empty, Operation
@@ -38,4 +39,4 @@ class UpdateTaskHandler(CommandHandler[UpdateTask, Task]):
         await self.task_repo.update_task(task)
         await self.uow.commit()
 
-        return task
+        return Task.from_entity(task)

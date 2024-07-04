@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from uuid import UUID
 
 from todoapp.application.common.query import Query, QueryHandler
+from todoapp.application.task.dto import Task
 from todoapp.application.task.exceptions import TaskAccessError
 from todoapp.application.task.interfaces.repository import TaskRepo
 from todoapp.domain.common.constants import Operation
@@ -25,4 +26,4 @@ class GetTaskByIdHandler(QueryHandler[GetTaskById, Task]):
         if not task.is_have_access(UserId(query.user_id), Operation.read):
             raise TaskAccessError(task_id)
 
-        return task
+        return Task.from_entity(task)

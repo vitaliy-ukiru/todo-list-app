@@ -31,7 +31,11 @@ class TaskRepo(Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    async def find_tasks(self, filters: FindTasksFilters, pagination: Pagination) -> list[Task]:
+    async def find_tasks(
+        self,
+        filters: dto.FindTasksFilters,
+        pagination: Pagination
+    ) -> list[dto.Task]:
         raise NotImplementedError
 
 
