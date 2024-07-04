@@ -26,6 +26,17 @@ class TaskListNotExistsError(ApplicationError):
     def title(self) -> str:
         return f'''A task list with the "{self.task_list_id}" id doesn't exists'''
 
+@dataclass(eq=False)
+class SharingRuleNotExistsError(ApplicationError):
+    list_id: UUID
+    user_id: UUID
+
+    code: ClassVar[str] = "SHARING_RULE_NOT_EXISTS"
+
+    @property
+    def title(self) -> str:
+        return f'''Sharing for user "{self.user_id}" for list "{self.list_id}" doesn't exists'''
+
 
 @dataclass(eq=False)
 class TaskListAccessError(ApplicationError):

@@ -5,6 +5,7 @@ from todoapp.application.common.pagination import Pagination
 from todoapp.application.task_list import dto
 from todoapp.domain.tasks_list import entities
 from todoapp.domain.tasks_list import value_objects as vo
+from todoapp.domain.user.entities import UserId
 
 
 class TaskListRepo(Protocol):
@@ -32,7 +33,14 @@ class TaskListRepo(Protocol):
     ) -> list[dto.TaskListDetails]:
         raise NotImplementedError
 
-
     @abstractmethod
     async def delete_task_list(self, list_id: vo.ListId) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def share_task_list(self, list_id: vo.ListId, user_id: UserId, rule: vo.SharingRule):
+        raise NotImplementedError
+
+    @abstractmethod
+    async def delete_share(self, list_id: vo.ListId, user_id: UserId):
         raise NotImplementedError
