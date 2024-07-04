@@ -4,12 +4,14 @@ from typing import Annotated, Self
 from pydantic import Field
 from uuid6 import uuid7
 
+from todoapp.domain.common.constants import Operation
 from todoapp.domain.common.entities import BaseEntity
 from todoapp.domain.common.value_objects import DateTimeNull
 from todoapp.domain.task.constants import MIN_NAME_LENGTH, MAX_NAME_LENGTH, MAX_DESC_LENGTH
-from todoapp.domain.task.exceptions import TaskNameOutOfRange, TaskDescOutOfRange
+from todoapp.domain.task.exceptions import (TaskNameOutOfRange, TaskDescOutOfRange,
+                                            MoveTaskToRestrictedList)
 from todoapp.domain.task.value_objects import TaskId
-from todoapp.domain.tasks_list.value_objects import ListId
+from todoapp.domain.tasks_list.entities import TaskList
 from todoapp.domain.user.entities import UserId
 
 
@@ -18,7 +20,7 @@ class Task(BaseEntity[TaskId]):
     name: Annotated[str, Field(min_length=MIN_NAME_LENGTH, max_length=MAX_NAME_LENGTH)]
     desc: Annotated[str | None, Field(default=None, max_length=MAX_DESC_LENGTH)]
     completed_at: DateTimeNull = None
-    list_id: ListId | None = None
+    list: TaskList | None = None
 
     @classmethod
     def create(
@@ -26,8 +28,9 @@ class Task(BaseEntity[TaskId]):
         name: str,
         user_id: UserId,
         desc: str | None = None,
-        list_id: ListId | None = None,
+        task_list: TaskList | None = None,
     ) -> Self:
+
         created_at = datetime.utcnow()
         task_id = TaskId(uuid7())
 
@@ -36,7 +39,7 @@ class Task(BaseEntity[TaskId]):
             user_id=user_id,
             name=name,
             desc=desc,
-            list_id=list_id,
+            list=task_list,
             created_at=created_at,
         )
 
