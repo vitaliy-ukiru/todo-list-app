@@ -60,22 +60,21 @@ class Task(BaseEntity[TaskId]):
         self.desc = desc
 
     def is_have_access(self, user_id: UserId, op: Operation) -> bool:
-        if self.list and user_id == self.list.user_id:  # Owner of list have full access
+        is_task_creator = self.user_id == user_id
+
+        if not self.list:
+            return is_task_creator  # If task don't have list, access have only owner
+
+        if user_id == self.list.user_id:  # Owner of list also have full access
             return True
 
-        if self.user_id == user_id:
-            if not self.list:  # Owner without list also have full access
-                return True
-
-            # User can updates own tasks without permission
-            # But it restricts read, manage if user kicked from sharing
-            if op is Operation.update_task and user_id in self.list.sharing.collaborators:
-                return True
-
-        if not self.list:  # otherwise, if it doesn't have list - forbid
-            return False
+        if op is Operation.update_task and is_task_creator:
+            # Task's creator, can update task if he's collaborators
+            # But he can don't have access to update tasks in list
+            return user_id in self.list.sharing.collaborators
 
         return self.list.is_have_access(user_id, op)
+
 
     @property
     def completed(self) -> bool:
