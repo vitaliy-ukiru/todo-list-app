@@ -77,3 +77,11 @@ class Task(BaseEntity[TaskId]):
             self.completed_at = None
         else:
             self.completed_at = datetime.utcnow()
+
+    def set_list(self, task_list: TaskList):
+        # If collaborator tries to put task in list, that closed for task's author
+        # this action must be restricted.
+        if not task_list.is_have_access(self.user_id, Operation.add_task_to_list):
+            raise MoveTaskToRestrictedList()
+
+        self.list = task_list
