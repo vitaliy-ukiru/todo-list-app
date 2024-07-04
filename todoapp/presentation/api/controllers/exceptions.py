@@ -103,6 +103,8 @@ def error_handler(status_code: int) -> Callable[..., Awaitable[JSONResponse]]:
 
 
 async def app_error_handler(request: Request, err: AppError, status_code: int) -> JSONResponse:
+    logger.error("Unexpected app error", exc_info=err, extra={"error": err})
+
     return await handle_error(
         request=request,
         err=err,
