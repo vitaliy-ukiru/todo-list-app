@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from todoapp.application.common.pagination import Pagination, PaginationResult
 from todoapp.application.common.query import Query, QueryHandler
-from todoapp.application.task.dto.tasks import TasksDTO, FindTasksFilters
+from todoapp.application.task.dto import TasksDTO, FindTasksFilters
 from todoapp.application.task.interfaces.repository import TaskRepo
 
 
