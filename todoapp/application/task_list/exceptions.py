@@ -26,6 +26,7 @@ class TaskListNotExistsError(ApplicationError):
     def title(self) -> str:
         return f'''A task list with the "{self.task_list_id}" id doesn't exists'''
 
+
 @dataclass(eq=False)
 class SharingRuleNotExistsError(ApplicationError):
     list_id: UUID
@@ -47,3 +48,13 @@ class TaskListAccessError(ApplicationError):
     @property
     def title(self) -> str:
         return f"You don't have access to task list \"{self.task_list_id}\""
+
+
+@dataclass(eq=False)
+class TaskListVisibilityNotModified(ApplicationError):
+    code: ClassVar[str] = "TASK_LIST_VISIBILITY_NOT_MODIFIED"
+
+
+    @property
+    def title(self) -> str:
+        return "Visibility of a task list not modified"

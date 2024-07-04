@@ -7,8 +7,9 @@ class Empty(Enum):
 
 class Operation(Enum):
     read = auto()
-    update_task_list = auto()
-    delete_task_list = auto()
+    update_list = auto()
+    delete_list = auto()
+    edit_sharing = auto()
 
     update_task = auto()
 
