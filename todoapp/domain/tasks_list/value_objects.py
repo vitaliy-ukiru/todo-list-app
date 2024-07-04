@@ -10,17 +10,8 @@ ListId = NewType("ListId", UUID)
 
 
 class SharingRule(BaseModel):
-    read_allowed: bool
     update_task_allowed: bool
     manage_tasks_allowed: bool
-
-    @model_validator(mode="after")
-    def validate_read_access(self) -> Self:
-        changes_allowed = self.update_task_allowed or self.read_allowed
-        if not self.read_allowed and changes_allowed:
-            raise ValueError("The rule allows change state of an object, but does not allow to read")
-
-        return self
 
     def __contains__(self, item: Operation) -> bool:
         if not isinstance(item, Operation):
@@ -28,7 +19,9 @@ class SharingRule(BaseModel):
 
         match item:
             case Operation.read:
-                return self.read_allowed
+                # if sharing rule presents it means that user can read
+                # it minimum access.
+                return True
             case Operation.update_task:
                 return self.update_task_allowed
             case Operation.add_task_to_list, Operation.delete_task_from_list:
