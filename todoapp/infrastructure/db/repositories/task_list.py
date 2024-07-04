@@ -1,36 +1,24 @@
-from abc import abstractmethod
-from typing import Iterable, NoReturn, Protocol
+from typing import Iterable, NoReturn
 
 from sqlalchemy import Select, select
 from sqlalchemy.exc import IntegrityError, DBAPIError
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.functions import count
 
 from todoapp.application.common.exceptions import RepoError
 from todoapp.application.common.pagination import Pagination
 from todoapp.application.task_list import dto
+from todoapp.application.task_list.dto import FindTaskListsFilters
 from todoapp.application.task_list.exceptions import TaskListAlreadyExistsError, TaskListNotExistsError
 from todoapp.application.task_list.interfaces import TaskListRepo
-from todoapp.application.task_list.dto import FindTaskListsFilters
-from todoapp.domain.task.entities import Task
 from todoapp.domain.tasks_list import entities
 from todoapp.domain.tasks_list import value_objects as vo
 from todoapp.domain.user.entities import UserId
 from todoapp.infrastructure.db.models import TaskList
-from todoapp.infrastructure.db.repositories.base import SQLAlchemyRepo
-from todoapp.infrastructure.db.repositories.exception_mapper import exception_mapper
-
-
-class TaskInListFinder(Protocol):
-    @abstractmethod
-    async def get_tasks_in_list(self, list_id: vo.ListId) -> list[Task]:
-        raise NotImplementedError
+from .base import SQLAlchemyRepo
+from .exception_mapper import exception_mapper
 
 
 class TaskListRepoImpl(SQLAlchemyRepo, TaskListRepo):
-    def __init__(self, session: AsyncSession, tasks_finder: TaskInListFinder):
-        self._tasks_finder = tasks_finder
-        super().__init__(session)
 
     @exception_mapper
     async def add_task_list(self, task_list: entities.TaskListDetails):
@@ -42,7 +30,7 @@ class TaskListRepoImpl(SQLAlchemyRepo, TaskListRepo):
             self._parse_error(err, task_list)
 
     @exception_mapper
-    async def acquire_task_list_by_id(self, list_id: vo.ListId) -> entities.TaskListDetails:
+    async def acquire_task_list_by_id(self, list_id: vo.ListId) -> entities.TaskList:
         task_list: TaskList | None = await self._session.get(TaskList, list_id)
         if task_list is None:
             raise TaskListNotExistsError(list_id)
@@ -50,7 +38,7 @@ class TaskListRepoImpl(SQLAlchemyRepo, TaskListRepo):
         return convert_model_to_entity_details(task_list)
 
     @exception_mapper
-    async def update_task_list(self, task_list: entities.TaskListDetails):
+    async def update_task_list(self, task_list: entities.TaskList):
         model = convert_details_entity_to_model(task_list)
         try:
             await self._session.merge(model)
@@ -80,7 +68,7 @@ class TaskListRepoImpl(SQLAlchemyRepo, TaskListRepo):
         self,
         filters: FindTaskListsFilters,
         pagination: Pagination
-    ) -> list[entities.TaskListDetails]:
+    ) -> list[dto.TaskListDetails]:
         query = select(TaskList)
         query = self._apply_filters(query, filters)
         query = self.apply_pagination(query, pagination)
@@ -88,14 +76,8 @@ class TaskListRepoImpl(SQLAlchemyRepo, TaskListRepo):
         lists = [convert_model_to_dto_details(task_list) for task_list in result]
         return lists
 
-    @exception_mapper
-    async def get_task_list_by_id(self, list_id: vo.ListId) -> entities.TaskList:
-        details = await self.acquire_task_list_by_id(list_id)
-        tasks = await self._tasks_finder.get_tasks_in_list(list_id)
-        return convert_model_with_tasks_to_entity(details, tasks)
-
     @staticmethod
-    def _parse_error(err: DBAPIError, task: entities.TaskListDetails) -> NoReturn:
+    def _parse_error(err: DBAPIError, task: entities.TaskList) -> NoReturn:
         match err.__cause__.__cause__.constraint_name:  # type: ignore
             case "task_lists_pkey":
                 raise TaskListAlreadyExistsError(task.id) from err
@@ -111,7 +93,7 @@ class TaskListRepoImpl(SQLAlchemyRepo, TaskListRepo):
         return query
 
 
-def convert_details_entity_to_model(task_list: entities.TaskListDetails) -> TaskList:
+def convert_details_entity_to_model(task_list: entities.TaskList) -> TaskList:
     return TaskList(
         id=task_list.id,
         name=task_list.name,
@@ -120,13 +102,14 @@ def convert_details_entity_to_model(task_list: entities.TaskListDetails) -> Task
     )
 
 
-def convert_model_to_entity_details(task_list: TaskList) -> entities.TaskListDetails:
-    return entities.TaskListDetails(
+def convert_model_to_entity_details(task_list: TaskList) -> entities.TaskList:
+    return entities.TaskList(
         id=vo.ListId(task_list.id),
         name=task_list.name,
         user_id=UserId(task_list.user_id),
         created_at=task_list.created_at,
     )
+
 
 def convert_model_to_dto_details(task_list: TaskList) -> dto.TaskListDetails:
     return dto.TaskListDetails(
@@ -136,15 +119,3 @@ def convert_model_to_dto_details(task_list: TaskList) -> dto.TaskListDetails:
         created_at=task_list.created_at,
     )
 
-
-def convert_model_with_tasks_to_entity(
-    task_list: TaskList,
-    tasks: list[Task],
-) -> entities.TaskList:
-    return entities.TaskList(
-        id=task_list.id,
-        name=task_list.name,
-        user_id=UserId(task_list.user_id),
-        created_at=task_list.created_at,
-        tasks=tasks,
-    )

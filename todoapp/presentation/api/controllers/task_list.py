@@ -6,12 +6,10 @@ from fastapi import APIRouter, Depends
 
 from todoapp.application.common.pagination import Pagination
 from todoapp.application.task_list import dto
-from todoapp.application.task_list.commands import CreateTaskList, DeleteTaskList, AddTaskToList
+from todoapp.application.task_list.commands import CreateTaskList, DeleteTaskList
 from todoapp.application.task_list.dto import TaskListsDTO, FindTaskListsFilters
 from todoapp.application.task_list.exceptions import TaskListAccessError, TaskListNotExistsError
-from todoapp.application.task_list.queries import GetListById
-from todoapp.application.task_list.queries.find_tasks_lists import FindTaskLists
-from todoapp.domain.tasks_list.exception import TaskAlreadyInList
+from todoapp.application.task_list.queries import GetListById,FindTaskLists
 from todoapp.domain.user.entities import UserId
 from todoapp.presentation.api.controllers.requests.task_list import CreateTaskListRequest
 from todoapp.presentation.api.controllers.responses.base import OkResponse, OkStatus, OK_STATUS
@@ -75,30 +73,6 @@ async def delete_task_list(
 ) -> OkStatus:
     await meditor.send(DeleteTaskList(list_id=list_id, user_id=user_id))
     return OK_STATUS
-
-
-@task_list_router.put(
-    "/{list_id}/add/{task_id}",
-    responses=_BASE_RESPONSES | {
-        409: response_error_doc(
-            status=409,
-            description="Task already in list",
-            example=TaskAlreadyInList(DEFAULT_UUID, DEFAULT_UUID)
-        )
-    }
-)
-async def add_task_to_list(
-    meditor: Annotated[Mediator, Depends(Stub(Mediator))],
-    user_id: Annotated[UserId, Depends(auth_user_by_token)],
-    list_id: UUID,
-    task_id: UUID,
-) -> OkResponse[dto.TaskList]:
-    task_list = await meditor.send(AddTaskToList(
-        list_id=list_id,
-        task_id=task_id,
-        user_id=user_id,
-    ))
-    return OkResponse(result=task_list)
 
 
 @task_list_router.get("/")
