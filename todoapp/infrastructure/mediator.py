@@ -36,8 +36,10 @@ from todoapp.application.task_list.commands import (
     DeleteTaskListHandler, DeleteTaskList
 )
 from todoapp.application.task_list.queries import (
-    GetListDetailsById,
-    GetListDetailsByIdHandler, GetListById, GetListByIdHandler,
+    GetListDetailsById, GetListDetailsByIdHandler,
+    GetListById, GetListByIdHandler,
+    FindTaskLists, FindTaskListsHandler,
+
 )
 from todoapp.application.user.commands import (
     CreateUser,
@@ -88,6 +90,7 @@ def setup_mediator(mediator: Mediator) -> None:
 
     mediator.register_query_handler(GetListDetailsById, GetListDetailsByIdHandler)
     mediator.register_query_handler(GetListById, GetListByIdHandler)
+    mediator.register_query_handler(FindTaskLists, FindTaskListsHandler)
 
 
 def get_mediator() -> Mediator:
