@@ -5,7 +5,7 @@ from didiator import Mediator
 
 from todoapp.application.common.command import Command, CommandHandler
 from todoapp.application.common.interfaces.uow import UnitOfWork
-from todoapp.application.task.interfaces.repository import TaskRepo, TaskListGetter
+from todoapp.application.task.interfaces import TaskRepo,TaskListGetter
 from todoapp.application.task_list.exceptions import TaskListAccessError
 from todoapp.domain.common.constants import Operation
 from todoapp.domain.task.entities import Task

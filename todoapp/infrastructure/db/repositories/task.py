@@ -9,7 +9,7 @@ from todoapp.application.common.exceptions import RepoError
 from todoapp.application.common.pagination import Pagination, SortOrder
 from todoapp.application.task import dto
 from todoapp.application.task.exceptions import TaskAlreadyExistsError, TaskNotExistsError
-from todoapp.application.task.interfaces.repository import TaskRepo, TaskListGetter
+from todoapp.application.task.interfaces import TaskRepo,TaskListGetter
 from todoapp.domain.common.constants import Empty
 from todoapp.domain.task import entities
 from todoapp.domain.task.value_objects import TaskId

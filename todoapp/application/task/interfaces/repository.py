@@ -5,8 +5,6 @@ from todoapp.application.common.pagination import Pagination
 from todoapp.application.task import dto
 from todoapp.domain.task.entities import Task
 from todoapp.domain.task.value_objects import TaskId
-from todoapp.domain.tasks_list.entities import TaskList
-from todoapp.domain.tasks_list.value_objects import ListId
 
 
 class TaskRepo(Protocol):
@@ -39,7 +37,3 @@ class TaskRepo(Protocol):
         raise NotImplementedError
 
 
-class TaskListGetter(Protocol):
-    @abstractmethod
-    async def acquire_task_list_by_id(self, list_id: ListId) -> TaskList:
-        raise NotImplementedError
