@@ -12,15 +12,16 @@ from todoapp.domain.user.entities import UserId
 class CreateTaskList(Command[UUID]):
     user_id: UUID
     name: str
+    public: bool = False
 
-
+@dataclass
 class CreateTaskListHandler(CommandHandler[CreateTaskList, TaskList]):
     uow: UnitOfWork
     list_repo: TaskListRepo
 
     async def __call__(self, command: CreateTaskList) -> UUID:
         user_id = UserId(command.user_id)
-        task_list = TaskList.create(command.name, user_id)
+        task_list = TaskList.create(command.name, user_id, command.public)
         await self.list_repo.save_task_list(task_list)
         await self.uow.commit()
         return task_list.id
