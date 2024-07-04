@@ -59,8 +59,14 @@ class Task(BaseEntity[TaskId]):
 
         self.desc = desc
 
-    def is_have_access(self, user_id: UserId) -> bool:
-        return user_id == self.user_id
+    def is_have_access(self, user_id: UserId, op: Operation) -> bool:
+        if self.user_id == user_id:  # Author have full access
+            return True
+
+        if self.list is None:  # otherwise, if it doesn't have list - forbid
+            return False
+
+        return self.list.is_have_access(user_id, op)
 
     @property
     def completed(self) -> bool:
