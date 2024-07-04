@@ -143,6 +143,14 @@ def _setup_repositories(di: DiBuilder):
         )
     )
 
+    di.bind(
+        bind_by_type(
+            Dependent(TaskListRepoImpl, scope=DiScope.REQUEST),
+            TaskListGetter,
+            covariant=True,
+        ),
+    )
+
 
 async def before_launch(di_builder: DiBuilder, di_state: ScopeState):
     async with di_builder.enter_scope(DiScope.REQUEST, di_state) as di_request_state:
