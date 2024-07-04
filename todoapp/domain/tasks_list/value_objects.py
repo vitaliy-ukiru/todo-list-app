@@ -24,7 +24,7 @@ class SharingRule(BaseModel):
                 return True
             case Operation.update_task:
                 return self.update_task_allowed
-            case Operation.add_task_to_list, Operation.delete_task_from_list:
+            case Operation.add_task_to_list | Operation.delete_task_from_list:
                 return self.manage_tasks_allowed
 
 
