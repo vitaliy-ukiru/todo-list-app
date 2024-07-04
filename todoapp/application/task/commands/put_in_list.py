@@ -9,7 +9,8 @@ from todoapp.application.task.exceptions import TaskAccessError
 from todoapp.application.task.interfaces.repository import TaskRepo
 from todoapp.application.task_list.exceptions import TaskListAccessError
 from todoapp.application.task_list.queries import GetListDetailsById
-from todoapp.domain.task.entities import Task, TaskId
+from todoapp.domain.task.entities import Task
+from todoapp.domain.task.value_objects import TaskId
 from todoapp.domain.user.entities import UserId
 
 

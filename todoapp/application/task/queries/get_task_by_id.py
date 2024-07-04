@@ -4,7 +4,8 @@ from uuid import UUID
 from todoapp.application.common.query import Query, QueryHandler
 from todoapp.application.task.exceptions import TaskAccessError
 from todoapp.application.task.interfaces.repository import TaskRepo
-from todoapp.domain.task.entities import Task, TaskId
+from todoapp.domain.task.entities import Task
+from todoapp.domain.task.value_objects import TaskId
 from todoapp.domain.user.entities import UserId
 
 

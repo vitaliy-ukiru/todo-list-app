@@ -1,6 +1,5 @@
 from datetime import datetime
-from typing import NewType, Annotated, Self
-from uuid import UUID
+from typing import Annotated, Self
 
 from pydantic import Field
 from uuid6 import uuid7
@@ -9,10 +8,9 @@ from todoapp.domain.common.entities import BaseEntity
 from todoapp.domain.common.value_objects import DateTimeNull
 from todoapp.domain.task.constants import MIN_NAME_LENGTH, MAX_NAME_LENGTH, MAX_DESC_LENGTH
 from todoapp.domain.task.exceptions import TaskNameOutOfRange, TaskDescOutOfRange
+from todoapp.domain.task.value_objects import TaskId
 from todoapp.domain.tasks_list.value_objects import ListId
 from todoapp.domain.user.entities import UserId
-
-TaskId = NewType("TaskId", UUID)
 
 
 class Task(BaseEntity[TaskId]):

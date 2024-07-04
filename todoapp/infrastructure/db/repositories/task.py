@@ -1,17 +1,17 @@
 from typing import NoReturn, Iterable
 
-from sqlalchemy import select, Select, delete
+from sqlalchemy import select, Select
 from sqlalchemy.exc import DBAPIError, IntegrityError
 from sqlalchemy.sql.functions import count
 
 from todoapp.application.common.exceptions import RepoError
 from todoapp.application.common.pagination import Pagination, SortOrder
+from todoapp.application.task.dto.tasks import FindTasksFilters
 from todoapp.application.task.exceptions import TaskAlreadyExistsError, TaskNotExistsError
 from todoapp.application.task.interfaces.repository import TaskRepo
-from todoapp.application.task.dto.tasks import FindTasksFilters
 from todoapp.domain.common.constants import Empty
 from todoapp.domain.task import entities
-from todoapp.domain.task.entities import TaskId
+from todoapp.domain.task.value_objects import TaskId
 from todoapp.domain.tasks_list.value_objects import ListId
 from todoapp.domain.user.entities import UserId
 from todoapp.infrastructure.db.models import Task
@@ -30,7 +30,7 @@ class TaskRepoImpl(SQLAlchemyRepo, TaskRepo):
             self._parse_error(err, task)
 
     @exception_mapper
-    async def acquire_task_by_id(self, task_id: entities.TaskId) -> entities.Task:
+    async def acquire_task_by_id(self, task_id: TaskId) -> entities.Task:
         task: Task | None = await self._session.get(
             Task,
             task_id,

@@ -3,7 +3,8 @@ from typing import Protocol
 
 from todoapp.application.common.pagination import Pagination
 from todoapp.application.task.dto.tasks import FindTasksFilters
-from todoapp.domain.task.entities import Task, TaskId
+from todoapp.domain.task.entities import Task
+from todoapp.domain.task.value_objects import TaskId
 
 
 class TaskRepo(Protocol):
