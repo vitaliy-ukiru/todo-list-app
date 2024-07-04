@@ -21,7 +21,7 @@ from .exception_mapper import exception_mapper
 class TaskListRepoImpl(SQLAlchemyRepo, TaskListRepo):
 
     @exception_mapper
-    async def add_task_list(self, task_list: entities.TaskListDetails):
+    async def save_task_list(self, task_list: entities.TaskList):
         model = convert_details_entity_to_model(task_list)
         self._session.add(model)
         try:

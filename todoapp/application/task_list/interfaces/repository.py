@@ -9,7 +9,7 @@ from todoapp.domain.tasks_list import value_objects as vo
 
 class TaskListRepo(Protocol):
     @abstractmethod
-    async def add_task_list(self, task: entities.TaskListDetails):
+    async def save_task_list(self, task: entities.TaskList):
         raise NotImplementedError
 
     @abstractmethod
