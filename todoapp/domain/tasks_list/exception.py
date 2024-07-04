@@ -6,18 +6,6 @@ from todoapp.domain.common.exceptions import DomainError
 
 
 @dataclass
-class TaskInListConflict(DomainError):
-    task_id: UUID
-    list_id: UUID
-
-    code: ClassVar[str] = "TASK_CONFLICT"
-
-    @property
-    def title(self) -> str:
-        return f'''The task with "{self.task_id}" task_id don't belong to list "{self.list_id}" '''
-
-
-@dataclass
 class TaskAlreadyInList(DomainError):
     task_id: UUID
     list_id: UUID

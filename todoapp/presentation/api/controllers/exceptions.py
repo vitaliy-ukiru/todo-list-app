@@ -23,7 +23,8 @@ from todoapp.application.task.exceptions import (
 from todoapp.application.task_list.exceptions import (
     TaskListAccessError,
     TaskListNotExistsError,
-    TaskListAlreadyExistsError
+    TaskListAlreadyExistsError,
+    TaskListVisibilityNotModified, SharingRuleNotExistsError
 )
 from todoapp.application.user.exceptions import (
     UserIdAlreadyExistsError,
@@ -37,7 +38,6 @@ from todoapp.domain.task.exceptions import (
 )
 from todoapp.domain.tasks_list.exception import (
     TaskAlreadyInList,
-    TaskInListConflict,
 )
 from todoapp.domain.user.exceptions import (
     UserIsDeletedError,
@@ -72,10 +72,11 @@ _TASK_LIST_EXC = {
     TaskListAccessError: status.HTTP_403_FORBIDDEN,
     TaskListNotExistsError: status.HTTP_404_NOT_FOUND,
     TaskListAlreadyExistsError: status.HTTP_409_CONFLICT,
+    SharingRuleNotExistsError: status.HTTP_404_NOT_FOUND,
+    TaskListVisibilityNotModified: status.HTTP_409_CONFLICT,
 
     # domain
     TaskAlreadyInList: status.HTTP_409_CONFLICT,
-    TaskInListConflict: status.HTTP_409_CONFLICT,
 }
 
 _AUTH_EXC = {

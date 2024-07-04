@@ -10,3 +10,8 @@ class CreateTaskListRequest(BaseModel):
         str,
         Field(min_length=MIN_TASK_LIST_NAME_LENGTH, max_length=MAX_TASK_LIST_NAME_LENGTH)
     ]
+
+
+class ShareRequest(BaseModel):
+    allow_update_tasks: bool = False
+    allow_manage_tasks: bool = False

@@ -6,9 +6,10 @@ from todoapp.application.common.dto import DTO
 from todoapp.application.common.pagination import PaginatedItemsDTO
 from todoapp.application.task.dto import Task as TaskDTO
 from todoapp.domain.tasks_list import entities
+from todoapp.domain.tasks_list.value_objects import SharingRule
 
 
-class TaskListDetails(DTO):
+class BaseTaskList(DTO):
     id: UUID
     user_id: UUID
     name: str
@@ -26,7 +27,7 @@ class TaskListDetails(DTO):
         )
 
 
-TaskListsDTO: TypeAlias = PaginatedItemsDTO[TaskListDetails]
+TaskListsDTO: TypeAlias = PaginatedItemsDTO[BaseTaskList]
 
 
 class TaskList(DTO):
@@ -46,6 +47,21 @@ class TaskList(DTO):
             created_at=entity.created_at,
             tasks=tasks,
             public=entity.sharing.public
+        )
+
+
+class TaskListSharing(BaseTaskList):
+    sharing: dict[UUID, SharingRule]
+
+    @classmethod
+    def from_entity(cls, entity: entities.TaskList) -> Self:
+        return cls(
+            id=entity.id,
+            user_id=entity.user_id,
+            name=entity.name,
+            created_at=entity.created_at,
+            public=entity.sharing.public,
+            sharing=entity.sharing.collaborators,
         )
 
 

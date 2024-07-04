@@ -30,7 +30,7 @@ class TaskListRepo(Protocol):
         self,
         filters: dto.FindTaskListsFilters,
         pagination: Pagination
-    ) -> list[dto.TaskListDetails]:
+    ) -> list[dto.BaseTaskList]:
         raise NotImplementedError
 
     @abstractmethod

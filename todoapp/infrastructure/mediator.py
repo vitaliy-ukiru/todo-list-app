@@ -39,7 +39,7 @@ from todoapp.application.task_list.commands import (
     ShareTaskList, ShareTaskListHandler,
 )
 from todoapp.application.task_list.queries import (
-    GetListDetailsById, GetListDetailsByIdHandler,
+    GetListSharingById, GetListSharingByIdHandler,
     GetListById, GetListByIdHandler,
     FindTaskLists, FindTaskListsHandler,
 
@@ -91,7 +91,7 @@ def setup_mediator(mediator: Mediator) -> None:
     mediator.register_command_handler(CreateTaskList, CreateTaskListHandler)
     mediator.register_command_handler(DeleteTaskList, DeleteTaskListHandler)
 
-    mediator.register_query_handler(GetListDetailsById, GetListDetailsByIdHandler)
+    mediator.register_query_handler(GetListSharingById, GetListSharingByIdHandler)
     mediator.register_query_handler(GetListById, GetListByIdHandler)
     mediator.register_query_handler(FindTaskLists, FindTaskListsHandler)
 

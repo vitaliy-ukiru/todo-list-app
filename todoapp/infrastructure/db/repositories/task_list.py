@@ -71,7 +71,7 @@ class TaskListRepoImpl(SQLAlchemyRepo, TaskListRepo):
         self,
         filters: FindTaskListsFilters,
         pagination: Pagination
-    ) -> list[dto.TaskListDetails]:
+    ) -> list[dto.BaseTaskList]:
         query = select(TaskList)
         query = self._apply_filters(query, filters)
         query = self.apply_pagination(query, pagination)
@@ -114,7 +114,7 @@ class TaskListRepoImpl(SQLAlchemyRepo, TaskListRepo):
     @exception_mapper
     async def delete_share(self, list_id: vo.ListId, user_id: UserId):
         sharing: ListSharing | None = await self._session.get(
-            TaskList, (list_id, user_id)
+            ListSharing, (list_id, user_id)
         )
         if sharing is None:
             raise SharingRuleNotExistsError(list_id, user_id)
@@ -156,8 +156,8 @@ def convert_model_to_entity(task_list: TaskList, sharing_rules: list[ListSharing
     )
 
 
-def convert_model_to_dto(task_list: TaskList) -> dto.TaskListDetails:
-    return dto.TaskListDetails(
+def convert_model_to_dto(task_list: TaskList) -> dto.BaseTaskList:
+    return dto.BaseTaskList(
         id=task_list.id,
         name=task_list.name,
         user_id=task_list.user_id,
