@@ -13,7 +13,10 @@ class ApplicationError(AppError):
 
 class UnexpectedError(ApplicationError):
     code: ClassVar[str] = "UNEXPECTED_ERROR"
-    pass
+
+    @property
+    def title(self) -> str:
+        return "An unexpected error occurred"
 
 
 class CommitError(UnexpectedError):
