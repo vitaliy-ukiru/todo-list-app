@@ -148,7 +148,6 @@ async def before_launch(di_builder: DiBuilder, di_state: ScopeState):
     async with di_builder.enter_scope(DiScope.REQUEST, di_state) as di_request_state:
         await di_builder.execute(get_jwt_authenticator, DiScope.REQUEST, state=di_request_state)
 
-
         try:
             await di_builder.execute(ping_database, DiScope.REQUEST, state=di_request_state)
         except Exception as err:
@@ -158,4 +157,3 @@ async def before_launch(di_builder: DiBuilder, di_state: ScopeState):
             await di_builder.execute(ping_redis_client, DiScope.REQUEST, state=di_request_state)
         except Exception as err:
             raise ConnectionError("Fail connect to redis") from err
-
