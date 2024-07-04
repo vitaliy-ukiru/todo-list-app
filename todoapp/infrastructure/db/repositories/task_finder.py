@@ -11,7 +11,6 @@ from .base import SQLAlchemyRepo
 from .task import convert_model_to_dto
 
 
-@dataclass
 class TaskInListFinderImpl(SQLAlchemyRepo, TaskInListFinder):
 
     async def get_tasks_in_list(self, list_id: ListId) -> list[dto.Task]:
