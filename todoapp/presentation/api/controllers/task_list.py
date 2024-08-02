@@ -106,7 +106,7 @@ async def get_task_list_sharing(
     return OkResponse(result=task_list)
 
 
-@task_list_router.post("/{list_id}/sharing/{collaborator}", responses=_BASE_RESPONSES)
+@task_list_router.put("/{list_id}/sharing/{collaborator}", responses=_BASE_RESPONSES)
 async def share_task_list(
     meditor: Annotated[Mediator, Depends(Stub(Mediator))],
     issuer_user_id: Annotated[UserId, Depends(auth_user_by_token)],
