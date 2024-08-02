@@ -7,6 +7,7 @@ from uuid6 import uuid7
 from todoapp.domain.common.constants import Operation
 from todoapp.domain.common.entities import BaseEntity
 from todoapp.domain.tasks_list.value_objects import ListId, Sharing
+from todoapp.domain.tasks_list.exception import TaskListVisibilityNotModified
 from todoapp.domain.user.entities import UserId
 
 MAX_TASK_LIST_NAME_LENGTH = 500
@@ -44,3 +45,8 @@ class TaskList(BaseEntity[ListId]):
             sharing=Sharing(public=public)
         )
 
+    def change_visibility(self, public: bool):
+        if self.sharing.public == public:
+            raise TaskListVisibilityNotModified()
+
+        self.sharing.public = public

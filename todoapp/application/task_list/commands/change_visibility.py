@@ -3,7 +3,7 @@ from uuid import UUID
 
 from todoapp.application.common.command import Command, CommandHandler
 from todoapp.application.common.interfaces.uow import UnitOfWork
-from todoapp.application.task_list.exceptions import TaskListAccessError, TaskListVisibilityNotModified
+from todoapp.application.task_list.exceptions import TaskListAccessError
 from todoapp.application.task_list.interfaces import TaskListRepo
 from todoapp.domain.common.constants import Operation
 from todoapp.domain.tasks_list.value_objects import ListId
@@ -30,11 +30,7 @@ class ChangeVisibilityHandler(CommandHandler[ChangeVisibility, None]):
         if not task_list.is_have_access(user_id, Operation.edit_sharing):
             raise TaskListAccessError(list_id)
 
-        if task_list.sharing.public == command.public:
-            raise TaskListVisibilityNotModified()
+        task_list.change_visibility(command.public)
 
-        task_list.sharing.public = command.public
         await self.list_repo.update_task_list(task_list)
         await self.uow.commit()
-
-
