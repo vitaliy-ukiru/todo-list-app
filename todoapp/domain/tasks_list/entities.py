@@ -6,8 +6,8 @@ from uuid6 import uuid7
 
 from todoapp.domain.common.constants import Operation
 from todoapp.domain.common.entities import BaseEntity
-from todoapp.domain.tasks_list.value_objects import ListId, Sharing
-from todoapp.domain.tasks_list.exception import TaskListVisibilityNotModified
+from todoapp.domain.tasks_list.exception import TaskListVisibilityNotModified, SharingRuleNotExistsError
+from todoapp.domain.tasks_list.value_objects import ListId, Sharing, SharingRule
 from todoapp.domain.user.entities import UserId
 
 MAX_TASK_LIST_NAME_LENGTH = 500
@@ -50,3 +50,15 @@ class TaskList(BaseEntity[ListId]):
             raise TaskListVisibilityNotModified()
 
         self.sharing.public = public
+
+    def set_sharing_rule(self, collaborator: UserId, rule: SharingRule):
+        self.sharing.collaborators[collaborator] = rule
+
+    def delete_collaborator(self, collaborator: UserId):
+        if collaborator not in self.sharing.collaborators:
+            raise SharingRuleNotExistsError(
+                list_id=self.id,
+                user_id=collaborator,
+            )
+
+        del self.sharing.collaborators[collaborator]

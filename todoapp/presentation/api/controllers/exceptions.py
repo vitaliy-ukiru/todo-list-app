@@ -23,8 +23,7 @@ from todoapp.application.task.exceptions import (
 from todoapp.application.task_list.exceptions import (
     TaskListAccessError,
     TaskListNotExistsError,
-    TaskListAlreadyExistsError,
-    TaskListVisibilityNotModified, SharingRuleNotExistsError
+    TaskListAlreadyExistsError
 )
 from todoapp.application.user.exceptions import (
     UserIdAlreadyExistsError,
@@ -38,6 +37,8 @@ from todoapp.domain.task.exceptions import (
 )
 from todoapp.domain.tasks_list.exception import (
     TaskAlreadyInList,
+    SharingRuleNotExistsError,
+    TaskListVisibilityNotModified,
 )
 from todoapp.domain.user.exceptions import (
     UserIsDeletedError,

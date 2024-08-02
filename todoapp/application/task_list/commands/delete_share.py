@@ -31,5 +31,7 @@ class DeleteTaskListSharingHandler(CommandHandler[DeleteTaskListSharing, None]):
         if not task_list.is_have_access(user_id, Operation.edit_sharing):
             raise TaskListAccessError(list_id)
 
-        await self.list_repo.delete_share(list_id, collaborator_id)
+        task_list.delete_collaborator(collaborator_id)
+
+        await self.list_repo.update_sharing_rules(task_list)
         await self.uow.commit()

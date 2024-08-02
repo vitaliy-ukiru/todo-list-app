@@ -1,6 +1,6 @@
 from typing import Iterable, NoReturn
 
-from sqlalchemy import Select, select
+from sqlalchemy import Select, select, ScalarResult
 from sqlalchemy.exc import IntegrityError, DBAPIError
 from sqlalchemy.sql.functions import count
 
@@ -8,11 +8,11 @@ from todoapp.application.common.exceptions import RepoError
 from todoapp.application.common.pagination import Pagination
 from todoapp.application.task_list import dto
 from todoapp.application.task_list.dto import FindTaskListsFilters
-from todoapp.application.task_list.exceptions import TaskListAlreadyExistsError, TaskListNotExistsError, \
-    SharingRuleNotExistsError
+from todoapp.application.task_list.exceptions import TaskListAlreadyExistsError, TaskListNotExistsError
 from todoapp.application.task_list.interfaces import TaskListRepo
 from todoapp.domain.tasks_list import entities
 from todoapp.domain.tasks_list import value_objects as vo
+from todoapp.domain.tasks_list.exception import SharingRuleNotExistsError
 from todoapp.domain.user.entities import UserId
 from todoapp.infrastructure.db.models import TaskList, ListSharing
 from .base import SQLAlchemyRepo
@@ -47,6 +47,25 @@ class TaskListRepoImpl(SQLAlchemyRepo, TaskListRepo):
             await self._session.merge(model)
         except IntegrityError as err:
             self._parse_error(err, task_list)
+
+    @exception_mapper
+    async def update_sharing_rules(self, task_list: entities.TaskList):
+        rules = await self._get_sharing_rules(task_list.id)
+        rules = convert_sharing_rules(rules)
+
+        for user_id in rules:
+            # Delete from DB not exists rules
+            if user_id not in task_list.sharing.collaborators:
+                await self._delete_share(list_id=task_list.id, user_id=user_id)
+
+        for collaborator, rule in task_list.sharing.collaborators.items():
+            # Save rule if not exists, or there are differences
+            if collaborator not in rules or rules[collaborator] != rule:
+                await self._add_share(
+                    list_id=task_list.id,
+                    user_id=collaborator,
+                    rule=rule
+                )
 
     @exception_mapper
     async def delete_task_list(self, list_id: vo.ListId) -> None:
@@ -90,8 +109,8 @@ class TaskListRepoImpl(SQLAlchemyRepo, TaskListRepo):
     @staticmethod
     def _apply_filters(query: Select, filters: FindTaskListsFilters) -> Select:
         query = query.where(TaskList.user_id == filters.user_id)
-        if filters.user_id is not None:
-            query = query.where(TaskList.name.icontains(filters.user_id))
+        if filters.name is not None:
+            query = query.where(TaskList.name.icontains(filters.name))
 
         return query
 
@@ -100,8 +119,7 @@ class TaskListRepoImpl(SQLAlchemyRepo, TaskListRepo):
         result: Iterable[ListSharing] = await self._session.scalars(query)
         return list(result)
 
-    @exception_mapper
-    async def share_task_list(self, list_id: vo.ListId, user_id: UserId, rule: vo.SharingRule):
+    async def _add_share(self, list_id: vo.ListId, user_id: UserId, rule: vo.SharingRule):
         sharing = ListSharing(
             list_id=list_id,
             user_id=user_id,
@@ -111,8 +129,7 @@ class TaskListRepoImpl(SQLAlchemyRepo, TaskListRepo):
 
         await self._session.merge(sharing)
 
-    @exception_mapper
-    async def delete_share(self, list_id: vo.ListId, user_id: UserId):
+    async def _delete_share(self, list_id: vo.ListId, user_id: UserId):
         sharing: ListSharing | None = await self._session.get(
             ListSharing, (list_id, user_id)
         )
@@ -140,7 +157,8 @@ def convert_sharing_rule(rule: ListSharing) -> vo.SharingRule:
     )
 
 
-def convert_model_to_entity(task_list: TaskList, sharing_rules: list[ListSharing]) -> entities.TaskList:
+def convert_model_to_entity(task_list: TaskList,
+                            sharing_rules: Iterable[ListSharing]) -> entities.TaskList:
     return entities.TaskList(
         id=vo.ListId(task_list.id),
         name=task_list.name,
@@ -148,12 +166,16 @@ def convert_model_to_entity(task_list: TaskList, sharing_rules: list[ListSharing
         created_at=task_list.created_at,
         sharing=vo.Sharing(
             public=task_list.public,
-            collaborators={
-                UserId(rule.user_id): convert_sharing_rule(rule)
-                for rule in sharing_rules
-            }
+            collaborators=convert_sharing_rules(sharing_rules)
         )
     )
+
+
+def convert_sharing_rules(rules: Iterable[ListSharing]) -> dict[UserId, vo.SharingRule]:
+    return {
+        UserId(rule.user_id): convert_sharing_rule(rule)
+        for rule in rules
+    }
 
 
 def convert_model_to_dto(task_list: TaskList) -> dto.BaseTaskList:

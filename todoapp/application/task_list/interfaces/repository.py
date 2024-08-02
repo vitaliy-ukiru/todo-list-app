@@ -22,6 +22,10 @@ class TaskListRepo(Protocol):
         raise NotImplementedError
 
     @abstractmethod
+    async def update_sharing_rules(self, task_list: entities.TaskList):
+        raise NotImplementedError
+
+    @abstractmethod
     async def get_total_count(self, filters: dto.FindTaskListsFilters) -> int:
         raise NotImplementedError
 
@@ -37,10 +41,3 @@ class TaskListRepo(Protocol):
     async def delete_task_list(self, list_id: vo.ListId) -> None:
         raise NotImplementedError
 
-    @abstractmethod
-    async def share_task_list(self, list_id: vo.ListId, user_id: UserId, rule: vo.SharingRule):
-        raise NotImplementedError
-
-    @abstractmethod
-    async def delete_share(self, list_id: vo.ListId, user_id: UserId):
-        raise NotImplementedError

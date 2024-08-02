@@ -34,12 +34,10 @@ class ShareTaskListHandler(CommandHandler[ShareTaskList, None]):
         if not task_list.is_have_access(user_id, Operation.edit_sharing):
             raise TaskListAccessError(list_id)
 
-        await self.list_repo.share_task_list(
-            list_id,
-            collaborator_id,
-            SharingRule(
-                update_task_allowed=command.allow_update_tasks,
-                manage_tasks_allowed=command.allow_manage_tasks,
-            )
-        )
+        task_list.set_sharing_rule(collaborator_id, SharingRule(
+            update_task_allowed=command.allow_update_tasks,
+            manage_tasks_allowed=command.allow_manage_tasks,
+        ))
+
+        await self.list_repo.update_sharing_rules(task_list)
         await self.uow.commit()
