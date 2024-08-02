@@ -4,7 +4,7 @@ from uuid import UUID
 from todoapp.application.common.command import Command, CommandHandler
 from todoapp.application.common.interfaces.uow import UnitOfWork
 from todoapp.application.task_list.interfaces import TaskListRepo
-from todoapp.domain.tasks_list.entities import TaskList
+from todoapp.domain.task_list.entities import TaskList
 from todoapp.domain.user.entities import UserId
 
 

@@ -11,7 +11,7 @@ from todoapp.application.task.interfaces import TaskRepo,TaskListGetter
 from todoapp.application.task_list.exceptions import TaskListAccessError
 from todoapp.domain.common.constants import Operation
 from todoapp.domain.task.value_objects import TaskId
-from todoapp.domain.tasks_list.value_objects import ListId
+from todoapp.domain.task_list.value_objects import ListId
 from todoapp.domain.user.entities import UserId
 
 

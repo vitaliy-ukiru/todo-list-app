@@ -5,8 +5,8 @@ from uuid import UUID
 from todoapp.application.common.dto import DTO
 from todoapp.application.common.pagination import PaginatedItemsDTO
 from todoapp.application.task.dto import Task as TaskDTO
-from todoapp.domain.tasks_list import entities
-from todoapp.domain.tasks_list.value_objects import SharingRule
+from todoapp.domain.task_list import entities
+from todoapp.domain.task_list.value_objects import SharingRule
 
 
 class BaseTaskList(DTO):

@@ -1,8 +1,8 @@
 from abc import abstractmethod
 from typing import Protocol
 
-from todoapp.domain.tasks_list.entities import TaskList
-from todoapp.domain.tasks_list.value_objects import ListId
+from todoapp.domain.task_list.entities import TaskList
+from todoapp.domain.task_list.value_objects import ListId
 
 
 class TaskListGetter(Protocol):

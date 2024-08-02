@@ -5,7 +5,7 @@ from sqlalchemy import select
 
 from todoapp.application.task import dto
 from todoapp.application.task_list.interfaces.task_finder import TaskInListFinder
-from todoapp.domain.tasks_list.value_objects import ListId
+from todoapp.domain.task_list.value_objects import ListId
 from todoapp.infrastructure.db.models import Task
 from .base import SQLAlchemyRepo
 from .task import convert_model_to_dto

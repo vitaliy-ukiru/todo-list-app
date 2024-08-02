@@ -10,9 +10,9 @@ from todoapp.application.task_list import dto
 from todoapp.application.task_list.dto import FindTaskListsFilters
 from todoapp.application.task_list.exceptions import TaskListAlreadyExistsError, TaskListNotExistsError
 from todoapp.application.task_list.interfaces import TaskListRepo
-from todoapp.domain.tasks_list import entities
-from todoapp.domain.tasks_list import value_objects as vo
-from todoapp.domain.tasks_list.exceptions import SharingRuleNotExistsError
+from todoapp.domain.task_list import entities
+from todoapp.domain.task_list import value_objects as vo
+from todoapp.domain.task_list.exceptions import SharingRuleNotExistsError
 from todoapp.domain.user.entities import UserId
 from todoapp.infrastructure.db.models import TaskList, ListSharing
 from .base import SQLAlchemyRepo

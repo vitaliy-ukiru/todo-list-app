@@ -13,8 +13,8 @@ from todoapp.application.task.interfaces import TaskRepo,TaskListGetter
 from todoapp.domain.common.constants import Empty
 from todoapp.domain.task import entities
 from todoapp.domain.task.value_objects import TaskId
-from todoapp.domain.tasks_list.entities import TaskList
-from todoapp.domain.tasks_list.value_objects import ListId
+from todoapp.domain.task_list.entities import TaskList
+from todoapp.domain.task_list.value_objects import ListId
 from todoapp.domain.user.entities import UserId
 from todoapp.infrastructure.db.models import Task
 from todoapp.infrastructure.db.repositories.base import SQLAlchemyRepo

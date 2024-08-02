@@ -2,7 +2,7 @@ from abc import abstractmethod
 from typing import Protocol
 
 from todoapp.application.task.dto import Task as TaskDTO
-from todoapp.domain.tasks_list.value_objects import ListId
+from todoapp.domain.task_list.value_objects import ListId
 
 
 class TaskInListFinder(Protocol):

@@ -3,8 +3,8 @@ from typing import Protocol
 
 from todoapp.application.common.pagination import Pagination
 from todoapp.application.task_list import dto
-from todoapp.domain.tasks_list import entities
-from todoapp.domain.tasks_list import value_objects as vo
+from todoapp.domain.task_list import entities
+from todoapp.domain.task_list import value_objects as vo
 from todoapp.domain.user.entities import UserId
 
 

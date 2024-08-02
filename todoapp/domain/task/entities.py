@@ -11,7 +11,7 @@ from todoapp.domain.task.constants import MIN_NAME_LENGTH, MAX_NAME_LENGTH, MAX_
 from todoapp.domain.task.exceptions import (TaskNameOutOfRange, TaskDescOutOfRange,
                                             MoveTaskToRestrictedList)
 from todoapp.domain.task.value_objects import TaskId
-from todoapp.domain.tasks_list.entities import TaskList
+from todoapp.domain.task_list.entities import TaskList
 from todoapp.domain.user.entities import UserId
 
 
