@@ -12,7 +12,7 @@ from todoapp.application.task_list.exceptions import TaskListAlreadyExistsError,
 from todoapp.application.task_list.interfaces import TaskListRepo
 from todoapp.domain.tasks_list import entities
 from todoapp.domain.tasks_list import value_objects as vo
-from todoapp.domain.tasks_list.exception import SharingRuleNotExistsError
+from todoapp.domain.tasks_list.exceptions import SharingRuleNotExistsError
 from todoapp.domain.user.entities import UserId
 from todoapp.infrastructure.db.models import TaskList, ListSharing
 from .base import SQLAlchemyRepo

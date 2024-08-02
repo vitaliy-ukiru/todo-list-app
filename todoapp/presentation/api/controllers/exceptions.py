@@ -35,7 +35,7 @@ from todoapp.domain.task.exceptions import (
     TaskDescOutOfRange,
     TaskNameOutOfRange,
 )
-from todoapp.domain.tasks_list.exception import (
+from todoapp.domain.tasks_list.exceptions import (
     TaskAlreadyInList,
     SharingRuleNotExistsError,
     TaskListVisibilityNotModified,

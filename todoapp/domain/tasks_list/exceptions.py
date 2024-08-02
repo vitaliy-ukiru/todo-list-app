@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from typing import ClassVar
 from uuid import UUID
 
-from todoapp.application.common.exceptions import ApplicationError
 from todoapp.domain.common.exceptions import DomainError
 
 
