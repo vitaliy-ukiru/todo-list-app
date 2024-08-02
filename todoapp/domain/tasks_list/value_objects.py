@@ -1,7 +1,7 @@
-from typing import NewType, Annotated, Self
+from typing import NewType, Annotated
 from uuid import UUID
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field
 
 from todoapp.domain.common.constants import Operation
 from todoapp.domain.user.entities import UserId
@@ -17,7 +17,10 @@ class SharingRule(BaseModel):
         if not isinstance(item, Operation):
             raise TypeError(f"Excepted type 'Operation', got {type(item)}")
 
-        match item:
+        return self.is_operation_allowed(item)
+
+    def is_operation_allowed(self, op: Operation) -> bool:
+        match op:
             case Operation.read:
                 # if sharing rule presents it means that user can read
                 # it minimum access.
@@ -26,6 +29,10 @@ class SharingRule(BaseModel):
                 return self.update_task_allowed
             case Operation.add_task_to_list | Operation.delete_task_from_list:
                 return self.manage_tasks_allowed
+
+        # Other operations available only for resource owner
+        # May be this will change later
+        return False
 
 
 class Sharing(BaseModel):
