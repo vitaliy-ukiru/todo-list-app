@@ -3,6 +3,7 @@ __all__ = (
     'User',
     'Task',
     'TaskList',
+    'ListSharing'
 )
 
 from datetime import datetime
