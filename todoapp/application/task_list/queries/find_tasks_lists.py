@@ -11,7 +11,7 @@ class FindTaskLists(Query[TaskListsDTO]):
     filters: FindTaskListsFilters
     pagination: Pagination
 
-
+@dataclass
 class FindTaskListsHandler(QueryHandler[FindTaskLists, TaskListsDTO]):
     repo: TaskListRepo
 
