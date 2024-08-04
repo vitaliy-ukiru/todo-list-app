@@ -126,7 +126,7 @@ class TaskListRepoImpl(SQLAlchemyRepo, TaskListRepo):
         return query
 
     async def _get_sharing_rules(self, list_id: vo.ListId) -> list[ListSharing]:
-        query = select(ListSharing).where(ListSharing.list_id == list_id)
+        query = select(ListSharing).where(ListSharing.list_id == list_id)  # type: ignore
         result: Iterable[ListSharing] = await self._session.scalars(query)
         return list(result)
 
