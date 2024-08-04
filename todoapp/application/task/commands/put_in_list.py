@@ -44,7 +44,7 @@ class PutTaskInListHandler(CommandHandler[PutTaskInList, Task]):
 
         # check that issuer can delete task from source list
         if task.list and not task.list.is_have_access(user_id, Operation.delete_task_from_list):
-            raise TaskListAccessError(task.list.id)
+            raise TaskListAccessError(command.list_id)
 
         task.set_list(task_list)
 
