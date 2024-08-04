@@ -122,7 +122,7 @@ async def complete_task(
     return OkResponse(result=task)
 
 
-@task_router.put(
+@task_router.patch(
     "/{task_id}/to/{list_id}",
     responses=_BASE_RESPONSES
 )
@@ -140,7 +140,7 @@ async def put_in_list(
     return OkResponse(result=task)
 
 
-@task_router.put(
+@task_router.patch(
     "/{task_id}",
     responses=_BASE_RESPONSES
 )
