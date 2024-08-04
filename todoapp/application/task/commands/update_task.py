@@ -6,7 +6,8 @@ from todoapp.application.common.interfaces.uow import UnitOfWork
 from todoapp.application.task.dto import Task
 from todoapp.application.task.exceptions import TaskAccessError
 from todoapp.application.task.interfaces import TaskRepo
-from todoapp.domain.common.constants import Empty, Operation
+from todoapp.domain.common.constants import Empty
+from todoapp.domain.access import Operation
 from todoapp.domain.task.value_objects import TaskId
 from todoapp.domain.user.entities import UserId
 

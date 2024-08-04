@@ -4,7 +4,7 @@ from typing import Annotated, Self
 from pydantic import Field
 from uuid6 import uuid7
 
-from todoapp.domain.common.constants import Operation
+from todoapp.domain.access import Operation
 from todoapp.domain.common.entities import BaseEntity
 from todoapp.domain.common.value_objects import DateTimeNull
 from todoapp.domain.task.constants import MIN_NAME_LENGTH, MAX_NAME_LENGTH, MAX_DESC_LENGTH

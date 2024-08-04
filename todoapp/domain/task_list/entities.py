@@ -4,7 +4,7 @@ from typing import Annotated, Self
 from pydantic import Field
 from uuid6 import uuid7
 
-from todoapp.domain.common.constants import Operation
+from todoapp.domain.access import Operation
 from todoapp.domain.common.entities import BaseEntity
 from todoapp.domain.task_list.exceptions import TaskListVisibilityNotModified, SharingRuleNotExistsError
 from todoapp.domain.task_list.value_objects import ListId, Sharing, SharingRule

@@ -5,7 +5,7 @@ from todoapp.application.common.query import Query, QueryHandler
 from todoapp.application.task_list import dto
 from todoapp.application.task_list.exceptions import TaskListAccessError
 from todoapp.application.task_list.interfaces import TaskListRepo,TaskInListFinder
-from todoapp.domain.common.constants import Operation
+from todoapp.domain.access import Operation
 from todoapp.domain.task_list.value_objects import ListId
 from todoapp.domain.user.entities import UserId
 

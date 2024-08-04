@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
-from todoapp.domain.common.constants import Operation
+from todoapp.domain.access import Operation
 from todoapp.domain.user.entities import UserId
 
 ListId = NewType("ListId", UUID)
