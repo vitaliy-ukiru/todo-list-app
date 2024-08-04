@@ -75,7 +75,6 @@ class Task(BaseEntity[TaskId]):
 
         return self.list.is_have_access(user_id, op)
 
-
     @property
     def completed(self) -> bool:
         return self.completed_at is not None
@@ -89,7 +88,7 @@ class Task(BaseEntity[TaskId]):
     def set_list(self, task_list: TaskList):
         # If collaborator tries to put task in list, that closed for task's author
         # this action must be restricted.
-        if not task_list.is_have_access(self.user_id, Operation.add_task_to_list):
+        if not task_list.is_have_access(self.user_id, Operation.read):
             raise MoveTaskToRestrictedList()
 
         self.list = task_list
