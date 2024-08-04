@@ -68,3 +68,4 @@ class TaskListSharing(BaseTaskList):
 class FindTaskListsFilters(DTO):
     user_id: UUID
     name: str | None = None
+    only_self: bool = False

@@ -1,6 +1,6 @@
 from typing import Iterable, NoReturn
 
-from sqlalchemy import Select, select, ScalarResult
+from sqlalchemy import Select, select
 from sqlalchemy.exc import IntegrityError, DBAPIError
 from sqlalchemy.sql.functions import count
 
@@ -81,7 +81,7 @@ class TaskListRepoImpl(SQLAlchemyRepo, TaskListRepo):
     @exception_mapper
     async def get_total_count(self, filters: FindTaskListsFilters) -> int:
         query = select(count(TaskList.id))
-        query = self._apply_filters(query, filters)
+        query = self._build_find_query(query, filters)
         items_count: int = await self._session.scalar(query)
         return items_count
 
@@ -92,7 +92,7 @@ class TaskListRepoImpl(SQLAlchemyRepo, TaskListRepo):
         pagination: Pagination
     ) -> list[dto.BaseTaskList]:
         query = select(TaskList)
-        query = self._apply_filters(query, filters)
+        query = self._build_find_query(query, filters)
         query = self.apply_pagination(query, pagination)
         result: Iterable[TaskList] = await self._session.scalars(query)
         lists = [convert_model_to_dto(task_list) for task_list in result]
@@ -106,9 +106,20 @@ class TaskListRepoImpl(SQLAlchemyRepo, TaskListRepo):
             case _:
                 raise RepoError from err
 
+    def _build_find_query(self, query: Select, filters: FindTaskListsFilters) -> Select:
+        query = self._apply_filters(query, filters)
+        user_where_clause = TaskList.user_id == filters.user_id
+
+        if not filters.only_self:
+            user_where_clause |= (ListSharing.user_id == filters.user_id)
+            query = query.outerjoin(ListSharing)
+
+        query = query.where(user_where_clause)  # type: ignore
+
+        return query
+
     @staticmethod
     def _apply_filters(query: Select, filters: FindTaskListsFilters) -> Select:
-        query = query.where(TaskList.user_id == filters.user_id)
         if filters.name is not None:
             query = query.where(TaskList.name.icontains(filters.name))
 

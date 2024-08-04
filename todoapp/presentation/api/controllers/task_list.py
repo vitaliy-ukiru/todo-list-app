@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Literal
 from uuid import UUID
 
 from didiator import Mediator
@@ -83,10 +83,12 @@ async def find_tasks(
 
     pagination: Annotated[Pagination, Depends(get_pagination)],
     name: str | None = None,
+    only_self: bool = False
 ) -> OkResponse[TaskListsDTO]:
     filters = FindTaskListsFilters(
         user_id=user_id,
         name=name,
+        only_self=only_self,
     )
 
     task_lists = await meditor.query(FindTaskLists(
