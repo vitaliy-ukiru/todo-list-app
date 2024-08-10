@@ -9,7 +9,7 @@ from todoapp.application.common.exceptions import RepoError
 from todoapp.application.common.pagination import Pagination, SortOrder
 from todoapp.application.task import dto
 from todoapp.application.task.exceptions import TaskAlreadyExistsError, TaskNotExistsError
-from todoapp.application.task.interfaces import TaskRepo,TaskListGetter
+from todoapp.application.task.interfaces import TaskRepo, TaskListGetter
 from todoapp.domain.common.constants import Empty
 from todoapp.domain.task import entities
 from todoapp.domain.task.value_objects import TaskId
@@ -106,8 +106,6 @@ class TaskRepoImpl(SQLAlchemyRepo, TaskRepo):
 
     @staticmethod
     def _apply_filters(query: Select, filters: dto.FindTasksFilters) -> Select:
-        query = query.where(Task.user_id == filters.user_id)
-
         if filters.name:
             query = query.where(Task.name.icontains(filters.name))
 
@@ -119,12 +117,18 @@ class TaskRepoImpl(SQLAlchemyRepo, TaskRepo):
                 Task.done_at.is_not(None) if filters.completed else Task.done_at.is_(None)
             )
 
+        user_clause = Task.user_id == filters.user_id
         if filters.list_id is not Empty.UNSET:
+            # if list_is is None when finding task's w/o list
+            # only in user's tasks
             if filters.list_id is None:
-                query = query.where(Task.list_id.is_(None))
+                query = query.where(Task.list_id.is_(None), user_clause)  # type: ignore
             else:
+                # find tasks only in list
+                # check to have access must be on upper layer
                 query = query.where(Task.list_id == filters.list_id)  # type: ignore
-
+        else:
+            query = query.where(user_clause)  # type: ignore
         return query
 
 

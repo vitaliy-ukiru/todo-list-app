@@ -168,7 +168,6 @@ async def find_tasks(
     desc: str | None = None,
     completed: bool | None = None,
     list_id: UUID | Literal["null"] | None = None,
-    shared: bool | None = None
 ) -> OkResponse[dto.TasksDTO]:
     if list_id is None:
         list_id = Empty.UNSET
@@ -181,7 +180,6 @@ async def find_tasks(
         desc=desc,
         completed=completed if completed is not None else Empty.UNSET,
         list_id=cast(UUID | None | Empty, list_id),
-        shared_access=shared if shared is not None else Empty.UNSET
     )
 
     tasks = await meditor.query(FindTasks(

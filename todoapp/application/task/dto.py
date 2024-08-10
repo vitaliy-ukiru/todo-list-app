@@ -16,7 +16,6 @@ class FindTasksFilters(DTO):
     desc: str | None = None
     completed: bool | Empty = Empty.UNSET
     list_id: UUID | None | Empty = Empty.UNSET
-    shared_access: bool | Empty = Empty.UNSET
 
 
 class Task(DTO):
