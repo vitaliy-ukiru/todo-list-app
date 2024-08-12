@@ -6,9 +6,7 @@ APP="exec poetry run python -m todoapp"
 
 
 function migrate () {
-  if [[ ! -z "${RUN_MIGRATIONS}" ]]; then
-    alembic upgrade head
-  fi
+  alembic upgrade head
 }
 
 migrate
