@@ -1,9 +1,3 @@
-# from unittest import TestCase
-#
-#
-# class TestTask(TestCase):
-#     def test_is_have_access(self):
-#         self.fail()
 from uuid import UUID
 
 import pytest
