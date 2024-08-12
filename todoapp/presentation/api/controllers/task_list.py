@@ -1,4 +1,4 @@
-from typing import Annotated, Literal
+from typing import Annotated
 from uuid import UUID
 
 from didiator import Mediator
@@ -77,7 +77,7 @@ async def delete_task_list(
 
 
 @task_list_router.get("/")
-async def find_tasks(
+async def find_task_lists(
     meditor: Annotated[Mediator, Depends(Stub(Mediator))],
     user_id: Annotated[UserId, Depends(auth_user_by_token)],
 
