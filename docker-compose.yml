@@ -3,25 +3,24 @@ services:
     image: postgres
     restart: always
     container_name: todo_app_pg
-    environment:
-      POSTGRES_PASSWORD: "todoapp"
-      POSTGRES_USER: todoapp
+    env_file:
+      - .env
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
       interval: 2s
       retries: 5
-    networks:
-      - backend
+#    networks:
+#      - backend
 
   todo_app_redis:
     image: "redis:7.2.5"
     container_name: todo_app_redis_db
     restart: always
 
-    networks:
-      - backend
+#    networks:
+#      - backend
 
   app:
     container_name: todo-list-app
@@ -50,11 +49,11 @@ services:
         read_only: true
         source: "${AUTH_PRIVATE_KEY_PATH}"
         target: "/etc/ssl/private/todo-app.pem"
-    networks:
-      - backend
-networks:
-  backend:
-    driver: bridge
+#    networks:
+#      - backend
+#networks:
+#  backend:
+#    driver:
 
 volumes:
   pgdata:
