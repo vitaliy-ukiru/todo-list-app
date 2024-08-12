@@ -6,7 +6,7 @@ services:
     env_file:
       - .env
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata_volume:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
       interval: 2s
@@ -31,9 +31,6 @@ services:
       - .env
     environment:
       REDIS_URL: 'redis://todo_app_redis:6379/0'
-      DB_PASSWORD: todoapp
-      DB_USERNAME: todoapp
-      DB_DATABASE: todoapp
       DB_HOST: todo_app_db
       AUTH_PRIVATE_KEY_PATH: "/etc/ssl/private/todo-app.pem"
       API_PORT: 8000
