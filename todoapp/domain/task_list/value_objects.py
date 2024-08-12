@@ -10,8 +10,8 @@ ListId = NewType("ListId", UUID)
 
 
 class SharingRule(BaseModel):
-    update_task_allowed: bool
-    manage_tasks_allowed: bool
+    update_task_allowed: bool = False
+    manage_tasks_allowed: bool = False
 
     def __contains__(self, item: Operation) -> bool:
         if not isinstance(item, Operation):
