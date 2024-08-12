@@ -1,0 +1,59 @@
+services:
+  todo_app_db:
+    image: postgres
+    restart: always
+    container_name: pg
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: todo-list-app
+      POSTGRES_USER: todo-list-app
+      POSTGRES_DB: todo-list-app
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
+      interval: 2s
+      retries: 5
+    networks:
+      - backend
+
+  todo_app_redis:
+    image: "redis:7.2.5"
+    container_name: redis_db
+    restart: always
+
+    networks:
+      - backend
+
+  app:
+    container_name: todo-list-app
+    restart: unless-stopped
+    build:
+      context: .
+    env_file:
+      - .env
+    environment:
+      REDIS_URL: 'redis://todo_app_redis:6379/0'
+      DB_PASSWORD: todo-list-app
+      DB_USERNAME: todo-list-app
+      DB_DATABASE: todo-list-app
+      DB_HOST: todo_app_db
+      AUTH_PRIVATE_KEY_PATH: "/etc/ssl/private/todo-app.pem"
+
+    depends_on:
+        db:
+          condition: service_healthy
+        redis:
+          condition: service_started
+    volumes:
+      - type: bind
+        read_only: true
+        source: "${AUTH_PRIVATE_KEY_PATH}"
+        target: "/etc/ssl/private/todo-app.pem"
+    networks:
+      - backend
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  pgdata:
