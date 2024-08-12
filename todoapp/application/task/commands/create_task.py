@@ -34,8 +34,6 @@ class CreateTaskHandler(CommandHandler[CreateTask, UUID]):
         task_list = None
         if command.list_id is not None:
             task_list = await self.list_repo.acquire_task_list_by_id(list_id)
-            if not task_list.is_have_access(user_id, Operation.add_task_to_list):
-                raise TaskListAccessError(command.list_id)
 
         task = Task.create(
             command.name,

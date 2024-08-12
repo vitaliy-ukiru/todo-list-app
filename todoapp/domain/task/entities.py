@@ -31,6 +31,9 @@ class Task(BaseEntity[TaskId]):
         task_list: TaskList | None = None,
     ) -> Self:
 
+        if task_list and not task_list.is_have_access(user_id, Operation.add_task_to_list):
+            raise TaskListAccessError(task_list.id)
+
         created_at = datetime.utcnow()
         task_id = TaskId(uuid7())
 
