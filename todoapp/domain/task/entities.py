@@ -4,6 +4,7 @@ from typing import Annotated, Self
 from pydantic import Field
 from uuid6 import uuid7
 
+from todoapp.application.task_list.exceptions import TaskListAccessError
 from todoapp.domain.access import Operation
 from todoapp.domain.common.entities import BaseEntity
 from todoapp.domain.common.value_objects import DateTimeNull
@@ -75,6 +76,9 @@ class Task(BaseEntity[TaskId]):
             # Task's creator, can update task if he's collaborators
             # But he can don't have access to update tasks in list
             return user_id in self.list.sharing.collaborators
+
+        if op is Operation.read and is_task_creator:
+            return True
 
         return self.list.is_have_access(user_id, op)
 
