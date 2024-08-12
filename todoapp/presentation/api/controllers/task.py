@@ -2,17 +2,16 @@ from typing import Annotated, Literal, cast
 from uuid import UUID
 
 from didiator import Mediator
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends
 
 from todoapp.application.common.pagination import Pagination
+from todoapp.application.task import dto
 from todoapp.application.task.commands import (CreateTask, DeleteTask, CompleteTask, PutTaskInList,
                                                UpdateTask)
-from todoapp.application.task.dto.tasks import FindTasksFilters, TasksDTO
 from todoapp.application.task.exceptions import TaskAccessError
 from todoapp.application.task.queries import GetTaskById, FindTasks
 from todoapp.application.task_list.exceptions import TaskListAccessError, TaskListNotExistsError
 from todoapp.domain.common.constants import Empty
-from todoapp.domain.task.entities import Task
 from todoapp.domain.user.entities import UserId
 from todoapp.presentation.api.controllers.requests.task import CreateTaskRequest, UpdateTaskRequest
 from todoapp.presentation.api.controllers.responses.base import OkResponse, OkStatus, OK_STATUS
@@ -57,7 +56,7 @@ async def create_task(
     meditor: Annotated[Mediator, Depends(Stub(Mediator))],
     user_id: Annotated[UserId, Depends(auth_user_by_token)],
     body: CreateTaskRequest,
-) -> OkResponse[Task]:
+) -> OkResponse[dto.Task]:
     task_id = await meditor.send(CreateTask(
         user_id=user_id,
         name=body.name,
@@ -81,7 +80,7 @@ async def get_task(
     task_id: UUID,
     meditor: Annotated[Mediator, Depends(Stub(Mediator))],
     user_id: Annotated[UserId, Depends(auth_user_by_token)],
-) -> OkResponse[Task]:
+) -> OkResponse[dto.Task]:
     task = await meditor.query(GetTaskById(
         task_id=task_id,
         user_id=user_id,
@@ -115,7 +114,7 @@ async def complete_task(
     task_id: UUID,
     meditor: Annotated[Mediator, Depends(Stub(Mediator))],
     user_id: Annotated[UserId, Depends(auth_user_by_token)],
-) -> OkResponse[Task]:
+) -> OkResponse[dto.Task]:
     task = await meditor.send(CompleteTask(
         task_id=task_id,
         user_id=user_id,
@@ -123,7 +122,7 @@ async def complete_task(
     return OkResponse(result=task)
 
 
-@task_router.put(
+@task_router.patch(
     "/{task_id}/to/{list_id}",
     responses=_BASE_RESPONSES
 )
@@ -132,7 +131,7 @@ async def put_in_list(
     list_id: UUID,
     meditor: Annotated[Mediator, Depends(Stub(Mediator))],
     user_id: Annotated[UserId, Depends(auth_user_by_token)],
-) -> OkResponse[Task]:
+) -> OkResponse[dto.Task]:
     task = await meditor.send(PutTaskInList(
         task_id=task_id,
         list_id=list_id,
@@ -141,7 +140,7 @@ async def put_in_list(
     return OkResponse(result=task)
 
 
-@task_router.put(
+@task_router.patch(
     "/{task_id}",
     responses=_BASE_RESPONSES
 )
@@ -150,7 +149,7 @@ async def update_task(
     meditor: Annotated[Mediator, Depends(Stub(Mediator))],
     user_id: Annotated[UserId, Depends(auth_user_by_token)],
     body: UpdateTaskRequest,
-) -> OkResponse[Task]:
+) -> OkResponse[dto.Task]:
     task = await meditor.send(UpdateTask(
         task_id=task_id,
         user_id=user_id,
@@ -168,15 +167,14 @@ async def find_tasks(
     name: str | None = None,
     desc: str | None = None,
     completed: bool | None = None,
-    list_id: Annotated[UUID | Literal["null"] | None, Query()] = None,
-
-) -> OkResponse[TasksDTO]:
+    list_id: UUID | Literal["null"] | None = None,
+) -> OkResponse[dto.TasksDTO]:
     if list_id is None:
         list_id = Empty.UNSET
     elif list_id == "null":
         list_id = None
 
-    filters = FindTasksFilters(
+    filters = dto.FindTasksFilters(
         user_id=user_id,
         name=name,
         desc=desc,

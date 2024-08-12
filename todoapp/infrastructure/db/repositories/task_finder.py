@@ -1,20 +1,20 @@
 from dataclasses import dataclass
+from typing import Iterable
 
-from todoapp.application.common.pagination import Pagination
-from todoapp.application.task.interfaces.repository import TaskRepo
-from todoapp.application.task.dto.tasks import FindTasksFilters
-from todoapp.domain.task.entities import Task
-from todoapp.domain.tasks_list import value_objects as vo
-from .task_list import TaskInListFinder
+from sqlalchemy import select
+
+from todoapp.application.task import dto
+from todoapp.application.task_list.interfaces.task_finder import TaskInListFinder
+from todoapp.domain.task_list.value_objects import ListId
+from todoapp.infrastructure.db.models import Task
+from .base import SQLAlchemyRepo
+from .task import convert_model_to_dto
 
 
-@dataclass
-class TaskInListFinderImpl(TaskInListFinder):
-    task_repo: TaskRepo
+class TaskInListFinderImpl(SQLAlchemyRepo, TaskInListFinder):
 
-    async def get_tasks_in_list(self, list_id: vo.ListId) -> list[Task]:
-        tasks = await self.task_repo.find_tasks(FindTasksFilters(
-            list_id=list_id
-        ), Pagination())
-
+    async def get_tasks_in_list(self, list_id: ListId) -> list[dto.Task]:
+        query = select(Task).where(Task.list_id == list_id)
+        result: Iterable[Task] = await self._session.scalars(query)
+        tasks = [convert_model_to_dto(task) for task in result]
         return tasks

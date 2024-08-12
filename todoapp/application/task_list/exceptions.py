@@ -36,3 +36,5 @@ class TaskListAccessError(ApplicationError):
     @property
     def title(self) -> str:
         return f"You don't have access to task list \"{self.task_list_id}\""
+
+

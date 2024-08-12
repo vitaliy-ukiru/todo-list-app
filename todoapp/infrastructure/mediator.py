@@ -32,19 +32,23 @@ from todoapp.application.task.queries import (
     GetTaskById, GetTaskByIdHandler,
 )
 from todoapp.application.task_list.commands import (
-    AddTaskToList, AddTaskToListHandler,
     CreateTaskList, CreateTaskListHandler,
-    DeleteTaskListHandler, DeleteTaskList
+    DeleteTaskList, DeleteTaskListHandler,
+    ChangeVisibility, ChangeVisibilityHandler,
+    DeleteTaskListSharing, DeleteTaskListSharingHandler,
+    ShareTaskList, ShareTaskListHandler,
 )
 from todoapp.application.task_list.queries import (
-    GetListDetailsById,
-    GetListDetailsByIdHandler, GetListById, GetListByIdHandler,
+    GetListSharingById, GetListSharingByIdHandler,
+    GetListById, GetListByIdHandler,
+    FindTaskLists, FindTaskListsHandler,
+
 )
 from todoapp.application.user.commands import (
     CreateUser,
     CreateUserHandler,
 )
-from todoapp.application.user.queries import(
+from todoapp.application.user.queries import (
     GetUserByEmail, GetUserByEmailHandler,
     GetUserById, GetUserByIdHandler
 )
@@ -84,12 +88,16 @@ def setup_mediator(mediator: Mediator) -> None:
     mediator.register_query_handler(FindTasks, FindTasksHandler)
     mediator.register_query_handler(GetTaskById, GetTaskByIdHandler)
 
-    mediator.register_command_handler(AddTaskToList, AddTaskToListHandler)
     mediator.register_command_handler(CreateTaskList, CreateTaskListHandler)
     mediator.register_command_handler(DeleteTaskList, DeleteTaskListHandler)
 
-    mediator.register_query_handler(GetListDetailsById, GetListDetailsByIdHandler)
+    mediator.register_query_handler(GetListSharingById, GetListSharingByIdHandler)
     mediator.register_query_handler(GetListById, GetListByIdHandler)
+    mediator.register_query_handler(FindTaskLists, FindTaskListsHandler)
+
+    mediator.register_command_handler(ShareTaskList, ShareTaskListHandler)
+    mediator.register_command_handler(DeleteTaskListSharing, DeleteTaskListSharingHandler)
+    mediator.register_command_handler(ChangeVisibility, ChangeVisibilityHandler)
 
 
 def get_mediator() -> Mediator:

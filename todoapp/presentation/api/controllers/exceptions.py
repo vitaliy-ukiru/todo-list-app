@@ -35,9 +35,10 @@ from todoapp.domain.task.exceptions import (
     TaskDescOutOfRange,
     TaskNameOutOfRange,
 )
-from todoapp.domain.tasks_list.exception import (
+from todoapp.domain.task_list.exceptions import (
     TaskAlreadyInList,
-    TaskInListConflict,
+    SharingRuleNotExistsError,
+    TaskListVisibilityNotModified,
 )
 from todoapp.domain.user.exceptions import (
     UserIsDeletedError,
@@ -72,10 +73,11 @@ _TASK_LIST_EXC = {
     TaskListAccessError: status.HTTP_403_FORBIDDEN,
     TaskListNotExistsError: status.HTTP_404_NOT_FOUND,
     TaskListAlreadyExistsError: status.HTTP_409_CONFLICT,
+    SharingRuleNotExistsError: status.HTTP_404_NOT_FOUND,
+    TaskListVisibilityNotModified: status.HTTP_409_CONFLICT,
 
     # domain
     TaskAlreadyInList: status.HTTP_409_CONFLICT,
-    TaskInListConflict: status.HTTP_409_CONFLICT,
 }
 
 _AUTH_EXC = {
@@ -103,6 +105,8 @@ def error_handler(status_code: int) -> Callable[..., Awaitable[JSONResponse]]:
 
 
 async def app_error_handler(request: Request, err: AppError, status_code: int) -> JSONResponse:
+    logger.error("Unexpected app error", exc_info=err, extra={"error": err})
+
     return await handle_error(
         request=request,
         err=err,

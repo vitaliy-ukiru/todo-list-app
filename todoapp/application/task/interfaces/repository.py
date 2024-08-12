@@ -2,8 +2,9 @@ from abc import abstractmethod
 from typing import Protocol
 
 from todoapp.application.common.pagination import Pagination
-from todoapp.application.task.dto.tasks import FindTasksFilters
-from todoapp.domain.task.entities import Task, TaskId
+from todoapp.application.task import dto
+from todoapp.domain.task.entities import Task
+from todoapp.domain.task.value_objects import TaskId
 
 
 class TaskRepo(Protocol):
@@ -24,9 +25,15 @@ class TaskRepo(Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    async def get_total_count(self, filters: FindTasksFilters) -> int:
+    async def get_total_count(self, filters: dto.FindTasksFilters) -> int:
         raise NotImplementedError
 
     @abstractmethod
-    async def find_tasks(self, filters: FindTasksFilters, pagination: Pagination) -> list[Task]:
+    async def find_tasks(
+        self,
+        filters: dto.FindTasksFilters,
+        pagination: Pagination
+    ) -> list[dto.Task]:
         raise NotImplementedError
+
+

@@ -15,3 +15,10 @@ class TaskDescOutOfRange(DomainError):
 
     def title(self) -> str:
         return "Length of task's desc must be between 3 and 500"
+
+
+class MoveTaskToRestrictedList(DomainError):
+    code: ClassVar[str] = "MOVE_TASK_TO_RESTRICT_LIST"
+
+    def title(self) -> str:
+        return "Moving a task to a list that is closed to the task author is restricted"

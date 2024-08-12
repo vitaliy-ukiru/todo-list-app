@@ -14,10 +14,11 @@ from didiator.utils.di_builder import DiBuilderImpl
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
+from todoapp.application.auth.interfaces.repository import TokensRepo
 from todoapp.application.auth.jwt import JWTAuthenticator
 from todoapp.application.common.interfaces.uow import UnitOfWork
-from todoapp.application.task.interfaces.repository import TaskRepo
-from todoapp.application.task_list.interfaces import TaskListRepo
+from todoapp.application.task.interfaces import TaskRepo, TaskListGetter
+from todoapp.application.task_list.interfaces import TaskInListFinder, TaskListRepo
 from todoapp.application.user.interfaces import UserRepo
 from todoapp.common.settings import (
     Config,
@@ -26,6 +27,7 @@ from todoapp.common.settings import (
 from todoapp.domain.user.entities import PasswordHasher
 from todoapp.infrastructure.auth.bcrypt import BcryptPasswordHasher
 from todoapp.infrastructure.auth.di import get_jwt_authenticator
+from todoapp.infrastructure.auth.repository import TokensRepoImpl
 from todoapp.infrastructure.db.main import (
     build_sa_engine,
     build_sa_session,
@@ -34,13 +36,10 @@ from todoapp.infrastructure.db.main import (
 from todoapp.infrastructure.db.repositories import (
     UserRepoImpl, TaskRepoImpl, TaskListRepoImpl, TaskInListFinderImpl
 )
-from todoapp.infrastructure.db.repositories.task_list import TaskInListFinder
 from todoapp.infrastructure.db.uow import SQLAlchemyUoW
 from todoapp.infrastructure.mediator import get_mediator
 from todoapp.infrastructure.redis.main import build_redis_client, ping_redis_client
 from .constants import DiScope
-from ..auth.repository import TokensRepoImpl
-from ...application.auth.interfaces.repository import TokensRepo
 
 
 def init_di_builder() -> DiBuilder:
@@ -144,11 +143,18 @@ def _setup_repositories(di: DiBuilder):
         )
     )
 
+    di.bind(
+        bind_by_type(
+            Dependent(TaskListRepoImpl, scope=DiScope.REQUEST),
+            TaskListGetter,
+            covariant=True,
+        ),
+    )
+
 
 async def before_launch(di_builder: DiBuilder, di_state: ScopeState):
     async with di_builder.enter_scope(DiScope.REQUEST, di_state) as di_request_state:
         await di_builder.execute(get_jwt_authenticator, DiScope.REQUEST, state=di_request_state)
-
 
         try:
             await di_builder.execute(ping_database, DiScope.REQUEST, state=di_request_state)
@@ -159,4 +165,3 @@ async def before_launch(di_builder: DiBuilder, di_state: ScopeState):
             await di_builder.execute(ping_redis_client, DiScope.REQUEST, state=di_request_state)
         except Exception as err:
             raise ConnectionError("Fail connect to redis") from err
-

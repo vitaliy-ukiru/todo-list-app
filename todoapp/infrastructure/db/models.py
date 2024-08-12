@@ -3,6 +3,7 @@ __all__ = (
     'User',
     'Task',
     'TaskList',
+    'ListSharing'
 )
 
 from datetime import datetime
@@ -44,6 +45,7 @@ class TaskList(EntityBaseModel):
     __tablename__ = "task_lists"
     name: Mapped[str] = mapped_column()
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
+    public: Mapped[bool] = mapped_column(default=False)
 
 
 class Task(EntityBaseModel):
@@ -54,3 +56,18 @@ class Task(EntityBaseModel):
     done_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
     list_id: Mapped[UUID | None] = mapped_column(ForeignKey("task_lists.id", ondelete="cascade"))
+
+
+class ListSharing(Base):
+    __tablename__ = "list_sharing"
+
+    list_id: Mapped[UUID] = mapped_column(
+        ForeignKey("task_lists.id", ondelete="cascade"),
+        primary_key=True
+    )
+    user_id: Mapped[UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="cascade"),
+        primary_key=True
+    )
+    update_tasks: Mapped[bool] = mapped_column()
+    manage_task: Mapped[bool] = mapped_column()
