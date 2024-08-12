@@ -33,17 +33,19 @@ class PutTaskInListHandler(CommandHandler[PutTaskInList, Task]):
         user_id = UserId(command.user_id)
 
         task = await self.task_repo.acquire_task_by_id(TaskId(command.task_id))
+
+        # check issuer can update task
         if not task.is_have_access(user_id, Operation.update_task):
             raise TaskAccessError(command.task_id)
+
+        # check that issuer can delete task from source list
+        if task.list and not task.list.is_have_access(user_id, Operation.delete_task_from_list):
+            raise TaskListAccessError(command.list_id)
 
         task_list = await self.list_repo.acquire_task_list_by_id(ListId(command.list_id))
 
         # check that issuer can add task to target list
         if not task_list.is_have_access(user_id, Operation.add_task_to_list):
-            raise TaskListAccessError(command.list_id)
-
-        # check that issuer can delete task from source list
-        if task.list and not task.list.is_have_access(user_id, Operation.delete_task_from_list):
             raise TaskListAccessError(command.list_id)
 
         task.set_list(task_list)
