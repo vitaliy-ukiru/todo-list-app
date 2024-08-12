@@ -6,9 +6,9 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: "todo-list-app"
-      POSTGRES_USER: "todo-list-app"
-      POSTGRES_DB: "todo-list-app"
+      POSTGRES_PASSWORD: "todoapp"
+      POSTGRES_USER: "todoapp"
+      POSTGRES_DB: "todoapp"
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
       interval: 2s
@@ -33,9 +33,9 @@ services:
       - .env
     environment:
       REDIS_URL: 'redis://todo_app_redis:6379/0'
-      DB_PASSWORD: todo-list-app
-      DB_USERNAME: todo-list-app
-      DB_DATABASE: todo-list-app
+      DB_PASSWORD: todoapp
+      DB_USERNAME: todoapp
+      DB_DATABASE: todoapp
       DB_HOST: todo_app_db
       AUTH_PRIVATE_KEY_PATH: "/etc/ssl/private/todo-app.pem"
       API_PORT: 8000
