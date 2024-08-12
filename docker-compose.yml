@@ -2,7 +2,7 @@ services:
   todo_app_db:
     image: postgres
     restart: always
-    container_name: pg
+    container_name: todo_app_pg
     volumes:
       - pgdata:/var/lib/postgresql/data
     environment:
@@ -18,7 +18,7 @@ services:
 
   todo_app_redis:
     image: "redis:7.2.5"
-    container_name: redis_db
+    container_name: todo_app_redis_db
     restart: always
 
     networks:
