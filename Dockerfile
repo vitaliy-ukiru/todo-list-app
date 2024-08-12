@@ -14,6 +14,7 @@ RUN python3 -m venv $POETRY_VENV \
     && $POETRY_VENV/bin/pip install poetry==${POETRY_VERSION}
 
 FROM python-base as app
+RUN addgroup --system app && adduser --system --group app
 
 COPY --from=poetry-base ${POETRY_VENV} ${POETRY_VENV}
 ENV PATH="${PATH}:${POETRY_VENV}/bin"
@@ -26,5 +27,6 @@ RUN poetry check && \
 
 
 COPY .. .
-
+RUN chmod +x scripts/*
+USER app
 ENTRYPOINT ["./scripts/docker-entrypoint.sh"]
