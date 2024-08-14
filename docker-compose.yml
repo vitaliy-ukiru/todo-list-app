@@ -43,7 +43,7 @@ services:
       DB_DATABASE: todoapp
 
     ports:
-      - "${API_PORT:-8000}:{$API_PORT:-8000}"
+      - "${API_PORT:-8000}:${API_PORT:-8000}"
     depends_on:
         todo_app_db:
           condition: service_healthy
