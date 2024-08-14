@@ -4,7 +4,7 @@ import uvicorn
 from di import ScopeState
 from didiator import Mediator
 from didiator.interface.utils.di_builder import DiBuilder
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 
 from todoapp.common.settings import Config
 from todoapp.presentation.api.controllers import setup_controllers
@@ -22,9 +22,14 @@ def init_api(
         debug=debug,
         title="ToDo App",
         version="0.0.1",
+        docs_url="/api/docs",
+        redoc_url="/api/redoc",
+        openapi_url="/api/openapi.json",
     )
     setup_providers(app, mediator, di_builder, di_state)
+
     setup_controllers(app)
+
     setup_exception_handlers(app)
     return app
 
