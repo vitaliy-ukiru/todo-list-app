@@ -11,16 +11,16 @@ services:
       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
       interval: 2s
       retries: 5
-#    networks:
-#      - backend
+    networks:
+      - backend
 
   todo_app_redis:
     image: "redis:7.2.5"
     container_name: todo_app_redis_db
     restart: always
 
-#    networks:
-#      - backend
+    networks:
+      - backend
 
   app:
     container_name: todo-list-app
@@ -34,8 +34,9 @@ services:
       DB_HOST: todo_app_db
       AUTH_PRIVATE_KEY_PATH: "/usr/ssl/key.pem"
       API_PORT: 8000
+      API_HOST: 0.0.0.0
     ports:
-      - "8000:8000"
+      - "8081:8000"
     depends_on:
         todo_app_db:
           condition: service_healthy
@@ -45,12 +46,12 @@ services:
       - type: bind
         read_only: true
         source: "${AUTH_PRIVATE_KEY_PATH}"
-        target: "/usr/ssl/key.pem"
-#    networks:
-#      - backend
-#networks:
-#  backend:
-#    driver:
+        target: "/key.pem"
+    networks:
+      - backend
+networks:
+  backend:
+    driver:
 
 volumes:
   pgdata_volume:
