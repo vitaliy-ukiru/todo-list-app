@@ -34,6 +34,8 @@ Translation: RU | [EN](./README.md)
 openssl genrsa -out key_name.pem 2048
 ```
 
+Не забудьте необходимые права на чтение.
+
 ## Конфигурация
 
 Конфигурация осуществляется с помощью переменных окружения или
@@ -41,7 +43,10 @@ openssl genrsa -out key_name.pem 2048
 
 Подробное описание настроек можно прочитать [здесь](./docs/ru/CONFIG.md).
 
-## Запустить
+
+## Запуск
+
+Перед запуском обязательно установите `API_PORT` и `AUTH_PRIVATE_KEY_PATH`
 
 ```
 docker compose up

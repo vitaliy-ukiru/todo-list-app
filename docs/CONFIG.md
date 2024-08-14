@@ -19,3 +19,5 @@ It is recommended to leave all settings except `AUTH_PRIVATE_KEY_PATH` at defaul
 
 # Other
 `API_HOST`, `API_PORT` - Host and port for running the API
+
+If you run it in Docker, then for the server to be accessible, `API_HOST` must be 0.0.0.0

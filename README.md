@@ -33,6 +33,8 @@ For JWT to work, you need to generate an RSA key in PEM format
 openssl genrsa -out key_name.pem 2048
 ```
 
+Don't forget the necessary read permissions.
+
 ## Configuration
 
 Configuration is done using environment variables or
@@ -41,6 +43,8 @@ using a .env file. An example of settings can be found in [.env.example](./.env.
 A detailed description of the settings can be read [here](./docs/CONFIG.md).
 
 ## Run
+
+Before starting, be sure to set `API_PORT` and `AUTH_PRIVATE_KEY_PATH`
 
 ```
 docker compose up
